@@ -3,7 +3,7 @@ public class TestRole
     {
         public int Attack;
         public int Defense;
-        public string Name = "sss";
+        public static string Name = "sss";
         
         public int GetHurt(TestRole testRole,int callNum)
         {
@@ -26,11 +26,11 @@ public class TestRole
         }
 
        
-        public void ShowTest(int num)
+        public static  void ShowTest(int num)
         {
           
         }
-        public void Show()    
+        public  void Show()    
         {
            
         }

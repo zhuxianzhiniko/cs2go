@@ -11,6 +11,8 @@ public class MyEvent : CSharpParserBaseListener
     private readonly StringBuilder member = new StringBuilder();
     private string className;
 
+    private bool isStatic;
+
     //类名
 
 
@@ -46,37 +48,54 @@ public class MyEvent : CSharpParserBaseListener
     }
 
 
-    //类成员    intAttack;
+    //类成员    int Attack;
     public override void EnterMemberDeclaration(CSharpParser.MemberDeclarationContext context)
     {
         for (var i = 0; i < context.ChildCount; i++)
             if (context.GetChild(i) is CSharpParser.FieldDeclarationContext)
             {
-                var fieldDeclarationContext =
-                    context.GetChild(i) as CSharpParser.FieldDeclarationContext;
-
-                if (fieldDeclarationContext != null)
+                if (context.GetChild(i) is CSharpParser.FieldDeclarationContext fieldDeclarationContext)
                 {
-                    var fieldvalue = fieldDeclarationContext.GetChild(1).GetChild(0).GetChild(0);
-
-                    var str = fieldvalue.GetText() + " " + fieldDeclarationContext.GetChild(0).GetText();
-                    member.AppendLine(str);
+              
+                    if (!isStatic)
+                    {
+                        var fieldvalue = fieldDeclarationContext.GetChild(1).GetChild(0).GetChild(0);
+                        var str = fieldvalue.GetText() + " " + fieldDeclarationContext.GetChild(0).GetText();
+                        member.AppendLine(str);
+                    }
+                    else
+                    {
+                        var fieldvalue = fieldDeclarationContext.GetChild(1).GetChild(0).GetText();
+                        var str = "var "+ fieldvalue;
+                        goStr.AppendLine(str);
+                    }
+                 
                 }
             }
 
-        // Console.WriteLine("evenet EnterMemberDeclaration:  " + context.GetText());
+        //Console.WriteLine("evenet EnterMemberDeclaration:  "+isStatic.ToString() +"  "+ context.GetText());
         base.EnterMemberDeclaration(context);
     }
 
+    //Attribute
     public override void EnterAttributeDeclaration(CSharpParser.AttributeDeclarationContext context)
     {
-        Console.WriteLine("Event EnterAttributeDeclaration: "+context.GetText());
+     //   Console.WriteLine("Event EnterAttributeDeclaration: "+context.GetText());
         base.EnterAttributeDeclaration(context);
     }
+    
 
     public override void EnterClassBodyDeclaration(CSharpParser.ClassBodyDeclarationContext context)
     {
-        Console.WriteLine("Event EnterClassBodyDeclaration: "+context.GetText());
+        isStatic = false;
+        if (context.GetChild(1) is CSharpParser.ModifierContext)
+        {
+            if (context.GetChild(1).GetText().ToLower() == "static")
+            {
+                isStatic = true;
+            }
+        }
+      // Console.WriteLine("Event EnterClassBodyDeclaration: "+context.GetText());
         base.EnterClassBodyDeclaration(context);
     }
 
@@ -91,7 +110,7 @@ public class MyEvent : CSharpParserBaseListener
             //      Console.WriteLine("child"+i+": "+child.GetText());
         }
 
-       // Console.WriteLine(context.GetText());
+        Console.WriteLine("Event EnterMethodDeclaration:"+context.GetText());
         var returnType = context.GetChild(0).GetText();
         if (typeof(void).Name.ToLower() == returnType)
             returnType = string.Empty;
@@ -133,8 +152,14 @@ public class MyEvent : CSharpParserBaseListener
             }
         }
 
-        goStr.AppendLine($"func (tn *{className}) {context.GetChild(1)} {parametStr} {returnType}" + " {");
-
+        if (isStatic)
+        {
+            goStr.AppendLine($"func  {context.GetChild(1)} {parametStr} {returnType}" + " {");
+        }
+        else
+        {
+            goStr.AppendLine($"func (tn *{className}) {context.GetChild(1)} {parametStr} {returnType}" + " {");
+        }
         //Console.WriteLine("evenet EnterMethodDeclaration:  "+context.GetText());
         base.EnterMethodDeclaration(context);
     }

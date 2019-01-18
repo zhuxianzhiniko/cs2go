@@ -3,8 +3,9 @@ package main
 type TestRole struct {
 	Attack  int
 	Defense int
-	Name    string
 }
+
+var Name = "sss"
 
 func (tn *TestRole) GetHurt(testRole TestRole, callNum int) int {
 	tn.Show()
@@ -15,9 +16,9 @@ func (tn *TestRole) GetHurt(testRole TestRole, callNum int) int {
 func (tn *TestRole) TestFunc(num int, name string) int {
 	return 100
 }
-func (tn *TestRole) ShowTest(num int) {
+func ShowTest(num int) {
 }
 func (tn *TestRole) Show() {
 }
-func (tn *TestRole) QQQShow() {
+func QQQShow() {
 }
