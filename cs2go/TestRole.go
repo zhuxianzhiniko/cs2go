@@ -8,13 +8,9 @@ type TestRole struct {
 
 func (tn *TestRole) GetHurt(testRole TestRole, callNum int) int {
 	tn.Show()
+	tn.QQQShow()
 	var num = 100
-	var num1 = 101
-	num += 1
-	var dd = num*100 + 100
-	var num3 = num + num1
-	var role = new(TestRole)
-	return callNum - testRole.Defense
+	return 0
 }
 func (tn *TestRole) TestFunc(num int, name string) int {
 	return 100
@@ -22,4 +18,6 @@ func (tn *TestRole) TestFunc(num int, name string) int {
 func (tn *TestRole) ShowTest(num int) {
 }
 func (tn *TestRole) Show() {
+}
+func (tn *TestRole) QQQShow() {
 }

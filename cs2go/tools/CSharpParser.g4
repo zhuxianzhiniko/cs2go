@@ -32,12 +32,16 @@ parser grammar CSharpParser;
 options { tokenVocab=CSharpLexer; }
 
 compilationUnit
-    : usingDeclaration* typeDeclaration* EOF
+    : usingDeclaration* attributeDeclaration? typeDeclaration* EOF
     ;
 
 
 usingDeclaration
     : USING STATIC? qualifiedName ('.' '*')? ';'
+    ;
+    
+attributeDeclaration
+    : '[' IDENTIFIER ']'
     ;
 
 typeDeclaration
@@ -144,6 +148,7 @@ methodDeclaration
     : typeTypeOrVoid IDENTIFIER formalParameters ('[' ']')*
       (THROWS qualifiedNameList)?
       methodBody
+   
     ;
 
 methodBody

@@ -59,6 +59,18 @@ public partial class CSharpParserBaseListener : ICSharpParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitUsingDeclaration([NotNull] CSharpParser.UsingDeclarationContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="CSharpParser.attributeDeclaration"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterAttributeDeclaration([NotNull] CSharpParser.AttributeDeclarationContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="CSharpParser.attributeDeclaration"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitAttributeDeclaration([NotNull] CSharpParser.AttributeDeclarationContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="CSharpParser.typeDeclaration"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

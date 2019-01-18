@@ -51,6 +51,16 @@ public interface ICSharpParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitUsingDeclaration([NotNull] CSharpParser.UsingDeclarationContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="CSharpParser.attributeDeclaration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterAttributeDeclaration([NotNull] CSharpParser.AttributeDeclarationContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="CSharpParser.attributeDeclaration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitAttributeDeclaration([NotNull] CSharpParser.AttributeDeclarationContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="CSharpParser.typeDeclaration"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

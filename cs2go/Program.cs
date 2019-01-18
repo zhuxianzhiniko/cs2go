@@ -34,7 +34,7 @@ namespace cs2go
             MyEvent printer = new MyEvent();
             ParseTreeWalker.Default.Walk(printer, tree);
          
-//           Console.WriteLine("out"+tree.GetText());
+//          Console.WriteLine("out"+tree.GetText());
   
         }
     }

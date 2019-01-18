@@ -27,7 +27,7 @@ public class MyEvent : CSharpParserBaseListener
     {
         var index = goStr.ToString().IndexOf("{", StringComparison.Ordinal);
         goStr.Insert(index + 1, "\n" + member);
-        Console.WriteLine(goStr.ToString());
+//        Console.WriteLine(goStr.ToString());
 
         var path = Environment.CurrentDirectory + $"\\{className}.go";
 
@@ -68,7 +68,20 @@ public class MyEvent : CSharpParserBaseListener
         base.EnterMemberDeclaration(context);
     }
 
+    public override void EnterAttributeDeclaration(CSharpParser.AttributeDeclarationContext context)
+    {
+        Console.WriteLine("Event EnterAttributeDeclaration: "+context.GetText());
+        base.EnterAttributeDeclaration(context);
+    }
 
+    public override void EnterClassBodyDeclaration(CSharpParser.ClassBodyDeclarationContext context)
+    {
+        Console.WriteLine("Event EnterClassBodyDeclaration: "+context.GetText());
+        base.EnterClassBodyDeclaration(context);
+    }
+
+    //MemberDeclaration
+    //MethodDeclaration
     //类函数 
     public override void EnterMethodDeclaration(CSharpParser.MethodDeclarationContext context)
     {
@@ -78,6 +91,7 @@ public class MyEvent : CSharpParserBaseListener
             //      Console.WriteLine("child"+i+": "+child.GetText());
         }
 
+       // Console.WriteLine(context.GetText());
         var returnType = context.GetChild(0).GetText();
         if (typeof(void).Name.ToLower() == returnType)
             returnType = string.Empty;
@@ -166,6 +180,12 @@ public class MyEvent : CSharpParserBaseListener
         {
             if (context.GetChild(0).GetChild(0) is CSharpParser.MethodCallContext) //函数调用
             {
+                var test = context.GetChild(0).GetChild(0);
+                
+             //   Console.WriteLine("str:"+test.GetText());
+                
+
+             //   Console.WriteLine("str 3:"+test.Parent.Parent.Parent.GetText());
                 goStr.AppendLine("tn." + context.GetChild(0).GetChild(0).GetText());
             }
             else //当作普通表达式计算
