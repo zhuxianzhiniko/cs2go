@@ -18,7 +18,7 @@ public class TestRole
     public int GetHurt(TestRole testRole, int callNum)
     {
         Show();
-        QQQShow();
+        StShow();
         int num = 100;
         TestRole role = new TestRole();
         int dd = num * 100 + 100;
@@ -26,7 +26,7 @@ public class TestRole
 
         int len = role.Strs.Length;
         int num1 = 101;
-        for (var i = 10; i < len; i++)
+        for (var i = 10; i < 100; i++)
         {
             num1++;
         }
@@ -51,7 +51,7 @@ public class TestRole
     {
     }
 
-    public static void QQQShow()
+    public static void StShow()
     {
     }
 }

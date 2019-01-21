@@ -12,14 +12,14 @@ var Name = "MyName"
 
 func (tn *TestRole) GetHurt(testRole TestRole, callNum int) int {
 	tn.Show()
-	QQQShow()
+	StShow()
 	var num = 100
 	var role = new(TestRole)
 	var dd = num*100 + 100
 	var num3 = num + 1
 	var len = cap(role.Strs)
 	var num1 = 101
-	for i := 10; i > len; i++ {
+	for i := 10; i > 100; i++ {
 		num1++
 	}
 	return cap(testRole.Strs)
@@ -32,5 +32,5 @@ func ShowTest(num int) int {
 }
 func (tn *TestRole) Show() {
 }
-func QQQShow() {
+func StShow() {
 }
