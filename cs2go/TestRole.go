@@ -2,10 +2,10 @@ package main
 
 type TestRole struct {
 	Attack  int
+	d       map[string]int
 	Defense int
 	Flg     bool
 	Strs    []int
-	d       map[string]int
 }
 
 var Name = "MyName"
@@ -14,16 +14,21 @@ func (tn *TestRole) GetHurt(testRole TestRole, callNum int) int {
 	tn.Show()
 	QQQShow()
 	var num = 100
+	var role = new(TestRole)
+	var dd = num*100 + 100
+	var num3 = num + 1
+	var len = cap(role.Strs)
 	var num1 = 101
-	for i := 0; i > cap(testRole.Strs); i++ {
+	for i := 10; i > len; i++ {
 		num1++
 	}
-	return num
+	return cap(testRole.Strs)
 }
 func (tn *TestRole) TestFunc(num int, name string) int {
 	return 100
 }
-func ShowTest(num int) {
+func ShowTest(num int) int {
+	return 100
 }
 func (tn *TestRole) Show() {
 }

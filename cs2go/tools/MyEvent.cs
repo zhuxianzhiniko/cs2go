@@ -235,19 +235,27 @@ public class MyEvent : CSharpParserBaseListener
     //局部变量信息
     public override void EnterLocalVariableDeclaration(CSharpParser.LocalVariableDeclarationContext context)
     {
-        var type = context.GetChild(0);
-        var name = context.GetChild(1);
+        Console.WriteLine("evenet EnterLocalVariableDeclaration:  " + context.GetText());
 
         if (context.Parent is CSharpParser.ForInitContext) //屏蔽掉for的语句。因为无法区别for的变量，和普通的局部变量
         {
             base.EnterLocalVariableDeclaration(context);
             return;
         }
+        var type = context.GetChild(0);
+        var name = context.GetChild(1);
 
-        if (type.GetChild(0) is CSharpParser.PrimitiveTypeContext)
-            goStr.AppendLine("var " + name.GetText());
+   
+            
+         if(type.GetChild(0) is CSharpParser.PrimitiveTypeContext )
+        {
+            goStr.AppendLine($"var {name.GetChild(0).GetChild(0).GetText()}={CSharpAPIToGo(name.GetChild(0)?.GetChild(2))}");
+        }
         else if (type.GetChild(0) is CSharpParser.ClassOrInterfaceTypeContext)
-            goStr.AppendLine("var " + name.GetChild(0).GetChild(0).GetText() + " = new(" + type.GetText() + ")");
+        {
+              goStr.AppendLine("var " + name.GetChild(0).GetChild(0).GetText() + " = new(" + type.GetText() + ")");
+        }
+          
 
         base.EnterLocalVariableDeclaration(context);
     }
@@ -256,39 +264,34 @@ public class MyEvent : CSharpParserBaseListener
 
     private string CSharpAPIToGo(IParseTree expressionContext)
     {
-        var text = expressionContext.GetText();
-        if (text.IndexOf(".Length", StringComparison.Ordinal) != -1)
+        var text = expressionContext.GetText().Replace(";","");
+        if (expressionContext.GetChild(0) is CSharpParser.MethodCallContext) //函数调用
         {
-            return $"cap({expressionContext.GetChild(0).GetText()})";
+            var str = expressionContext.GetChild(0).GetText();
+            var name = str.Replace("()", "");
+            if (IsStatic(name))
+                return str;
+            else
+                return "tn." + str;
+        }
+        else if (text.IndexOf(".Length", StringComparison.Ordinal) != -1) //数组
+        {
+            return $"cap({expressionContext.GetChild(0).GetText().Replace(".Length","")})";
         }
 
-        return text;
+        return expressionContext.GetText().Replace(";","");;
     }
-    
+
+
 
     //函数局部语法  
     public override void EnterStatement(CSharpParser.StatementContext context)
     {
-     //  Console.WriteLine("evenet EnterStatement:  " + context.GetText());
-        if (context.GetChild(0) is CSharpParser.ExpressionContext)
+         //Console.WriteLine("evenet EnterStatement:  " + context.GetText());
+        if (context.GetChild(0) is CSharpParser.ExpressionContext) //普通的表达式
         {
-            if (context.GetChild(0).GetChild(0) is CSharpParser.MethodCallContext) //函数调用
-            {
-                var str = context.GetChild(0).GetChild(0).GetText();
-
-                var name = str.Replace("()", "");
-
-                if (IsStatic(name))
-                    goStr.AppendLine(str);
-                else
-                    goStr.AppendLine("tn." + str);
-            }
-            else //当作普通表达式计算
-            {
-                var str = context.GetText();
-                str = str.Replace(";", "");
-                goStr.AppendLine(str);
-            }
+            goStr.AppendLine(CSharpAPIToGo(context.GetChild(0)));
+   
         }
         else if (context.GetChild(0) is TerminalNodeImpl && context.GetChild(0).GetText() == "for") //for循环
         {
@@ -303,16 +306,13 @@ public class MyEvent : CSharpParserBaseListener
             goStr.Append(
                 $"for {ex.GetChild(0).GetText()} := {ex.GetChild(2).GetText()}; {exStr}; {forContext.GetChild(4).GetText()}");
         }
-        else if (context.GetChild(0) is CSharpParser.BlockContext)
+        else if (context.GetChild(0) is CSharpParser.BlockContext) //忽略
         {
             
         }
-        else
+        else if (context.GetChild(0) is TerminalNodeImpl && context.GetChild(0).GetText() == "return")//return 
         {
-            var str = context.GetText();
-            str = str.Replace(";", "");
-            str = str.Replace("return", "return ");
-            goStr.AppendLine(str);
+            goStr.AppendLine("return "+CSharpAPIToGo(context.GetChild(1)));
         }
 
         base.EnterStatement(context);

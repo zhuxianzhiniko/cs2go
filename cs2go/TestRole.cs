@@ -1,61 +1,57 @@
-    using System.Collections.Generic;
-    using static TestRole;
+using System.Collections.Generic;
 
-    [Test]
+[Test]
 public class TestRole
+{
+    public static string Name = "MyName";
+    public int Attack;
+
+    public Dictionary<string, int> d;
+    public int Defense;
+
+    public bool Flg;
+
+    public int[] Strs;
+
+
+
+    public int GetHurt(TestRole testRole, int callNum)
     {
-        public int Attack;
-        public int Defense;
-        public  bool Flg;
-        public static   string Name = "MyName";
-//readonly
-        public int[] Strs;
+        Show();
+        QQQShow();
+        int num = 100;
+        TestRole role = new TestRole();
+        int dd = num * 100 + 100;
+        int num3 = num + 1;
 
-        public Dictionary<string, int> d;
-        
-
-        
-//        public static int[] s_trss;
-        
-        public int GetHurt(TestRole testRole,int callNum)
+        int len = role.Strs.Length;
+        int num1 = 101;
+        for (var i = 10; i < len; i++)
         {
-           Show();
-           QQQShow();
-           int num = 100;
-         
-            /*int dd = num * 100 + 100;
-            int num3 = num + num1;
-            TestRole role = new TestRole();
-            return callNum - testRole.Defense;*/
-            
-         
-
-            int num1 = 101;
-            for (int i = 0; i < testRole.Strs.Length; i++)
-            {
-                num1++;
-            }
-            return num;
+            num1++;
         }
 
-      
-        public  int TestFunc(int num, string name)
-        {
-            return 100;
-        }
 
-       
-        public static  void ShowTest(int num)
-        {
-          
-        }
-        public  void Show()    
-        {
-           
-        }
-     
-        public static void QQQShow()
-        {
-            
-        }
+        return testRole.Strs.Length;
     }
+
+
+    public int TestFunc(int num, string name)
+    {
+        return 100;
+    }
+
+
+    public static int ShowTest(int num)
+    {
+        return 100;
+    }
+
+    public void Show()
+    {
+    }
+
+    public static void QQQShow()
+    {
+    }
+}
