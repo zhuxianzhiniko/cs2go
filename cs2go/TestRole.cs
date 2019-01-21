@@ -1,9 +1,15 @@
+    using System.Collections.Generic;
+    using static TestRole;
+
     [Test]
 public class TestRole
     {
         public int Attack;
         public int Defense;
-        public static string Name = "sss";
+        public bool Flg;
+        public static string Name = "MyName";
+
+        public int[] Strs;
         
         public int GetHurt(TestRole testRole,int callNum)
         {
@@ -36,7 +42,7 @@ public class TestRole
         }
 
      
-        public  static void QQQShow()
+        public  void QQQShow()
         {
             
         }

@@ -48,6 +48,19 @@ public class MyEvent : CSharpParserBaseListener
     }
 
 
+    private string GetArrayType(string tpye)
+    {
+        if (tpye.IndexOf("[", StringComparison.Ordinal) != -1 && tpye.IndexOf("]", StringComparison.Ordinal) != -1)
+        {
+            tpye= tpye.Replace("[", "").Replace("]", "");
+            return "[]" + tpye;
+        }
+        else
+        {
+            return tpye;
+        }
+    }
+
     //类成员    int Attack;
     public override void EnterMemberDeclaration(CSharpParser.MemberDeclarationContext context)
     {
@@ -60,7 +73,7 @@ public class MyEvent : CSharpParserBaseListener
                     if (!isStatic)
                     {
                         var fieldvalue = fieldDeclarationContext.GetChild(1).GetChild(0).GetChild(0);
-                        var str = fieldvalue.GetText() + " " + fieldDeclarationContext.GetChild(0).GetText();
+                        var str = fieldvalue.GetText() + " " + GetArrayType(fieldDeclarationContext.GetChild(0).GetText());
                         member.AppendLine(str);
                     }
                     else
@@ -73,7 +86,7 @@ public class MyEvent : CSharpParserBaseListener
                 }
             }
 
-        //Console.WriteLine("evenet EnterMemberDeclaration:  "+isStatic.ToString() +"  "+ context.GetText());
+   //     Console.WriteLine("evenet EnterMemberDeclaration:  "+isStatic.ToString() +"  "+ context.GetText());
         base.EnterMemberDeclaration(context);
     }
 
@@ -95,7 +108,7 @@ public class MyEvent : CSharpParserBaseListener
                 isStatic = true;
             }
         }
-      // Console.WriteLine("Event EnterClassBodyDeclaration: "+context.GetText());
+        //Console.WriteLine("Event EnterClassBodyDeclaration: "+context.GetText());
         base.EnterClassBodyDeclaration(context);
     }
 
@@ -110,7 +123,7 @@ public class MyEvent : CSharpParserBaseListener
             //      Console.WriteLine("child"+i+": "+child.GetText());
         }
 
-        Console.WriteLine("Event EnterMethodDeclaration:"+context.GetText());
+      //  Console.WriteLine("Event EnterMethodDeclaration:"+context.GetText());
         var returnType = context.GetChild(0).GetText();
         if (typeof(void).Name.ToLower() == returnType)
             returnType = string.Empty;
@@ -160,7 +173,7 @@ public class MyEvent : CSharpParserBaseListener
         {
             goStr.AppendLine($"func (tn *{className}) {context.GetChild(1)} {parametStr} {returnType}" + " {");
         }
-        //Console.WriteLine("evenet EnterMethodDeclaration:  "+context.GetText());
+      // Console.WriteLine("isStatic"+isStatic+ " evenet EnterMethodDeclaration:  "+context.GetText());
         base.EnterMethodDeclaration(context);
     }
 
@@ -200,18 +213,23 @@ public class MyEvent : CSharpParserBaseListener
     //函数局部语法  
     public override void EnterStatement(CSharpParser.StatementContext context)
     {
-        // Console.WriteLine("evenet EnterStatement:  " + context.GetText());
+       // Console.WriteLine("evenet EnterStatement:  " + context.GetText());
         if (context.GetChild(0) is CSharpParser.ExpressionContext)
         {
             if (context.GetChild(0).GetChild(0) is CSharpParser.MethodCallContext) //函数调用
             {
-                var test = context.GetChild(0).GetChild(0);
-                
-             //   Console.WriteLine("str:"+test.GetText());
-                
 
-             //   Console.WriteLine("str 3:"+test.Parent.Parent.Parent.GetText());
-                goStr.AppendLine("tn." + context.GetChild(0).GetChild(0).GetText());
+             string str = context.GetChild(0).GetChild(0).GetText();
+
+             if (str.IndexOf("this.", StringComparison.Ordinal) != -1)
+             {
+                 goStr.AppendLine(str.Replace("this.","tn.")); 
+             }
+             else
+             {
+                 goStr.AppendLine("tn."+str); 
+             }
+            
             }
             else //当作普通表达式计算
             {

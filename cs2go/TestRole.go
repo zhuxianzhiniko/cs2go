@@ -3,9 +3,11 @@ package main
 type TestRole struct {
 	Attack  int
 	Defense int
+	Flg     bool
+	Strs    []int
 }
 
-var Name = "sss"
+var Name = "MyName"
 
 func (tn *TestRole) GetHurt(testRole TestRole, callNum int) int {
 	tn.Show()
@@ -20,5 +22,5 @@ func ShowTest(num int) {
 }
 func (tn *TestRole) Show() {
 }
-func QQQShow() {
+func (tn *TestRole) QQQShow() {
 }
