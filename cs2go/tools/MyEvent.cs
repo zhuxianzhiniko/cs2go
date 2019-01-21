@@ -144,8 +144,6 @@ public class MyEvent : CSharpParserBaseListener
                       key = method.GetChild(1).GetText();
                   }
                   staticMethods.Add(key);
-                  Console.WriteLine("key:"+ key);
-                  //CSharpParser.FieldDeclarationContext
                }
                
  
@@ -256,10 +254,22 @@ public class MyEvent : CSharpParserBaseListener
 
 
 
+    private string CSharpAPIToGo(IParseTree expressionContext)
+    {
+        var text = expressionContext.GetText();
+        if (text.IndexOf(".Length", StringComparison.Ordinal) != -1)
+        {
+            return $"cap({expressionContext.GetChild(0).GetText()})";
+        }
+
+        return text;
+    }
+    
+
     //函数局部语法  
     public override void EnterStatement(CSharpParser.StatementContext context)
     {
-       Console.WriteLine("evenet EnterStatement:  " + context.GetText());
+     //  Console.WriteLine("evenet EnterStatement:  " + context.GetText());
         if (context.GetChild(0) is CSharpParser.ExpressionContext)
         {
             if (context.GetChild(0).GetChild(0) is CSharpParser.MethodCallContext) //函数调用
@@ -286,8 +296,12 @@ public class MyEvent : CSharpParserBaseListener
 
             var ex = forContext.GetChild(0).GetChild(0).GetChild(1).GetChild(0);
 
+            var ex1 = forContext.GetChild(2);
+
+            var exStr = CSharpAPIToGo(ex1.GetChild(0)) + ">" + CSharpAPIToGo(ex1.GetChild(2));
+            
             goStr.Append(
-                $"for {ex.GetChild(0).GetText()} := {ex.GetChild(2).GetText()}; {forContext.GetChild(2).GetText()}; {forContext.GetChild(4).GetText()}");
+                $"for {ex.GetChild(0).GetText()} := {ex.GetChild(2).GetText()}; {exStr}; {forContext.GetChild(4).GetText()}");
         }
         else if (context.GetChild(0) is CSharpParser.BlockContext)
         {

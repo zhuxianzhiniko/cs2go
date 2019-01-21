@@ -19,7 +19,7 @@ public class TestRole
         
         public int GetHurt(TestRole testRole,int callNum)
         {
-            Show();
+           Show();
            QQQShow();
            int num = 100;
          
@@ -30,11 +30,11 @@ public class TestRole
             
          
 
-            /*int num1 = 101;
-            for (int i = 0; i < 10-1; i++)
+            int num1 = 101;
+            for (int i = 0; i < testRole.Strs.Length; i++)
             {
                 num1++;
-            }*/
+            }
             return num;
         }
 

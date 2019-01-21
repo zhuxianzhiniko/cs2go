@@ -14,6 +14,10 @@ func (tn *TestRole) GetHurt(testRole TestRole, callNum int) int {
 	tn.Show()
 	QQQShow()
 	var num = 100
+	var num1 = 101
+	for i := 0; i > cap(testRole.Strs); i++ {
+		num1++
+	}
 	return num
 }
 func (tn *TestRole) TestFunc(num int, name string) int {
