@@ -19,15 +19,23 @@ public class TestRole
         
         public int GetHurt(TestRole testRole,int callNum)
         {
-            Show();
-            QQQShow();
-            int num = 100;
-            /*int num1 = 101;
-            num += 1;
-            int dd = num * 100 + 100;
+            //Show();
+           // QQQShow();
+          //  int num = 100;
+         
+            /*int dd = num * 100 + 100;
             int num3 = num + num1;
             TestRole role = new TestRole();
             return callNum - testRole.Defense;*/
+
+            int num1 = 101;
+            for (int i = 0; i < 10; i++)
+            {
+                num1++;
+            }
+            
+           
+            
             return 0;
         }
 
@@ -48,7 +56,7 @@ public class TestRole
         }
 
      
-        public  void QQQShow()
+        public static void QQQShow()
         {
             
         }
