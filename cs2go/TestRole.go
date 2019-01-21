@@ -5,6 +5,7 @@ type TestRole struct {
 	Defense int
 	Flg     bool
 	Strs    []int
+	d       map[string]int
 }
 
 var Name = "MyName"

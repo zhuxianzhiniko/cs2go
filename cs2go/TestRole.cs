@@ -10,6 +10,12 @@ public class TestRole
         public static string Name = "MyName";
 
         public int[] Strs;
+
+        public Dictionary<string, int> d;
+        
+
+        
+//        public static int[] s_trss;
         
         public int GetHurt(TestRole testRole,int callNum)
         {

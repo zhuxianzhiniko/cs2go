@@ -29,7 +29,7 @@ public class MyEvent : CSharpParserBaseListener
     {
         var index = goStr.ToString().IndexOf("{", StringComparison.Ordinal);
         goStr.Insert(index + 1, "\n" + member);
-//        Console.WriteLine(goStr.ToString());
+        Console.WriteLine(goStr.ToString());
 
         var path = Environment.CurrentDirectory + $"\\{className}.go";
 
@@ -54,6 +54,12 @@ public class MyEvent : CSharpParserBaseListener
         {
             tpye= tpye.Replace("[", "").Replace("]", "");
             return "[]" + tpye;
+        }
+        else if (tpye.IndexOf("Dictionary", StringComparison.Ordinal) != -1)
+        {
+            tpye = tpye.Replace("Dictionary<", "").Replace(">", "");
+            var dicInfo =tpye.Split(",");
+            return $"map[{dicInfo[0]}]{dicInfo[1]}";
         }
         else
         {
@@ -86,7 +92,7 @@ public class MyEvent : CSharpParserBaseListener
                 }
             }
 
-   //     Console.WriteLine("evenet EnterMemberDeclaration:  "+isStatic.ToString() +"  "+ context.GetText());
+        //Console.WriteLine("evenet EnterMemberDeclaration:  "+isStatic.ToString() +"  "+ context.GetText());
         base.EnterMemberDeclaration(context);
     }
 
