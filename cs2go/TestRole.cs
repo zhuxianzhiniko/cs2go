@@ -6,9 +6,9 @@ public class TestRole
     {
         public int Attack;
         public int Defense;
-        public bool Flg;
-        public static string Name = "MyName";
-
+        public  bool Flg;
+        public static   string Name = "MyName";
+//readonly
         public int[] Strs;
 
         public Dictionary<string, int> d;
@@ -19,24 +19,23 @@ public class TestRole
         
         public int GetHurt(TestRole testRole,int callNum)
         {
-            //Show();
-           // QQQShow();
-          //  int num = 100;
+            Show();
+           QQQShow();
+           int num = 100;
          
             /*int dd = num * 100 + 100;
             int num3 = num + num1;
             TestRole role = new TestRole();
             return callNum - testRole.Defense;*/
+            
+         
 
-            int num1 = 101;
-            for (int i = 0; i < 10; i++)
+            /*int num1 = 101;
+            for (int i = 0; i < 10-1; i++)
             {
                 num1++;
-            }
-            
-           
-            
-            return 0;
+            }*/
+            return num;
         }
 
       
@@ -54,7 +53,6 @@ public class TestRole
         {
            
         }
-
      
         public static void QQQShow()
         {

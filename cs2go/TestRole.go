@@ -11,11 +11,10 @@ type TestRole struct {
 var Name = "MyName"
 
 func (tn *TestRole) GetHurt(testRole TestRole, callNum int) int {
-	var num1 = 101
-	for i := 0; i < 10; i++ {
-		num1++
-	}
-	return 0
+	tn.Show()
+	QQQShow()
+	var num = 100
+	return num
 }
 func (tn *TestRole) TestFunc(num int, name string) int {
 	return 100

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -11,7 +12,8 @@ public class MyEvent : CSharpParserBaseListener
     private readonly StringBuilder member = new StringBuilder();
     private string className;
 
-    private bool isStatic;
+
+    private List<string> staticMethods;
 
     //类名
 
@@ -24,6 +26,7 @@ public class MyEvent : CSharpParserBaseListener
         goStr.AppendLine("}");
         base.EnterClassDeclaration(context);
     }
+
 
     public override void ExitClassDeclaration(CSharpParser.ClassDeclarationContext context)
     {
@@ -45,6 +48,11 @@ public class MyEvent : CSharpParserBaseListener
         Process.Start(info).WaitForExit();
 
         base.ExitClassDeclaration(context);
+    }
+
+    public bool IsStatic(string key)
+    {
+        return staticMethods.IndexOf(key) != -1;
     }
 
 
@@ -73,18 +81,20 @@ public class MyEvent : CSharpParserBaseListener
             if (context.GetChild(i) is CSharpParser.FieldDeclarationContext)
                 if (context.GetChild(i) is CSharpParser.FieldDeclarationContext fieldDeclarationContext)
                 {
-                    if (!isStatic)
+                    var fieldName = fieldDeclarationContext.GetChild(1).GetChild(0).GetChild(0);
+
+                    if (!IsStatic(fieldName.GetText()))
                     {
-                        var fieldvalue = fieldDeclarationContext.GetChild(1).GetChild(0).GetChild(0);
-                        var str = fieldvalue.GetText() + " " + GetGoType(fieldDeclarationContext.GetChild(0).GetText());
+                        var str = fieldName.GetText() + " " + GetGoType(fieldDeclarationContext.GetChild(0).GetText());
                         member.AppendLine(str);
                     }
                     else
                     {
                         var fieldvalue = fieldDeclarationContext.GetChild(1).GetChild(0).GetText();
                         var str = "var " + fieldvalue;
-                        goStr.AppendLine(str);
+                        goStr.AppendLine(str); 
                     }
+                   
                 }
 
         // Console.WriteLine("evenet EnterMemberDeclaration:  "+isStatic.ToString() +"  "+ context.GetText());
@@ -99,16 +109,54 @@ public class MyEvent : CSharpParserBaseListener
     }
 
 
-    public override void EnterClassBodyDeclaration(CSharpParser.ClassBodyDeclarationContext context)
-    {
-        isStatic = false;
-        if (context.GetChild(1) is CSharpParser.ModifierContext)
-            if (context.GetChild(1).GetText().ToLower() == "static")
-                isStatic = true;
-        //Console.WriteLine("Event EnterClassBodyDeclaration: "+context.GetText());
-        base.EnterClassBodyDeclaration(context);
-    }
+//    public override void EnterClassBodyDeclaration(CSharpParser.ClassBodyDeclarationContext context)
+//    {
+//        isStatic = false;
+//        if (context.GetChild(1) is CSharpParser.ModifierContext)
+//            if (context.GetChild(1).GetText().ToLower() == "static")
+//                isStatic = true;
+//        Console.WriteLine("Event EnterClassBodyDeclaration: "+context.GetText());
+//        base.EnterClassBodyDeclaration(context);
+//    }
 
+
+  
+
+    public override void EnterClassBody(CSharpParser.ClassBodyContext context)
+    {
+        staticMethods = new List<string>();
+        for (int i = 0; i < context.ChildCount; i++)
+        {
+           var child =  context.GetChild(i);
+
+           if (child is CSharpParser.ClassBodyDeclarationContext)
+           {
+               if (child.ChildCount > 2 && child.GetChild(1).GetText() == "static")
+               {
+                  var method = child.GetChild(2).GetChild(0);
+                  string key = String.Empty;
+                  if (method is CSharpParser.FieldDeclarationContext)
+                  {
+                      key = method.GetChild(1).GetChild(0).GetChild(0).GetText();
+                  }
+                  else
+                  {
+                      key = method.GetChild(1).GetText();
+                  }
+                  staticMethods.Add(key);
+                  Console.WriteLine("key:"+ key);
+                  //CSharpParser.FieldDeclarationContext
+               }
+               
+ 
+               
+           }
+        }
+        base.EnterClassBody(context);
+    }
+    
+
+   
     //MemberDeclaration
     //MethodDeclaration
     //类函数 
@@ -162,7 +210,8 @@ public class MyEvent : CSharpParserBaseListener
             }
         }
 
-        if (isStatic)
+        
+        if (IsStatic(context.GetChild(1).GetText()))
             goStr.Append($"func  {context.GetChild(1)} {parametStr} {returnType}" );
         else
             goStr.Append($"func (tn *{className}) {context.GetChild(1)} {parametStr} {returnType}" );
@@ -217,8 +266,10 @@ public class MyEvent : CSharpParserBaseListener
             {
                 var str = context.GetChild(0).GetChild(0).GetText();
 
-                if (str.IndexOf("this.", StringComparison.Ordinal) != -1)
-                    goStr.AppendLine(str.Replace("this.", "tn."));
+                var name = str.Replace("()", "");
+
+                if (IsStatic(name))
+                    goStr.AppendLine(str);
                 else
                     goStr.AppendLine("tn." + str);
             }
@@ -234,9 +285,6 @@ public class MyEvent : CSharpParserBaseListener
             var forContext = context.GetChild(2) as CSharpParser.ForControlContext;
 
             var ex = forContext.GetChild(0).GetChild(0).GetChild(1).GetChild(0);
-            var bs = context.GetChild(4).GetChild(0).GetChild(1).GetChild(0);
-
-            Console.WriteLine("evenet 4:  " + bs.GetText());
 
             goStr.Append(
                 $"for {ex.GetChild(0).GetText()} := {ex.GetChild(2).GetText()}; {forContext.GetChild(2).GetText()}; {forContext.GetChild(4).GetText()}");
