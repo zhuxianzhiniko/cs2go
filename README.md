@@ -8,28 +8,34 @@
 
 * 基本的所有语法 比如 int num = 100 , func(100) staticFun() 
 * 常规的运算符  int num = 100 - 10 * 5 + 4 / 10
-* for循环结构
+* for
+* switch
 * Csharp类结构/类的实例化(new)
 * 字典/数组的声明
 * 静态函数/类函数
 * 接口
-* switch
+
 
 **计划支持的Csharp语法/API/运算符**
 
 * enum
 * array/List 的增删改查API
 * map/Dictionary 的增删改查API
-* random
-* Mathf
 * const/readonly 
 * package
+
+**考虑支持的语法/API**
+
+* 局部变量，变量类型不支持var; 比如：var num = 100;
+* buffer类型操作
+* Random 常用API
+* Math 常用API
+
 
 **不支持的Csharp语法/API/运算符/限制**
 
 * go的 [关键字](https://github.com/Unknwon/the-way-to-go_ZH_CN/blob/master/eBook/04.1.md) 不能为变量名,函数名，类名等;比如：int go = 100;
 * Csharp 继承，一般泛型（数组/字典 泛型除外），Task,async,LINQ,out,delegate等独有特性; 比如：async Task Show<T>(T num)
-* 局部变量，变量类型不支持var; 比如：var num = 100;
 * 三元运算符
 * ?.运算符
 * Csharp接口的get;set; 比如：int GetHp { get; set; }
