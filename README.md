@@ -12,11 +12,11 @@
 * Csharp类结构/类的实例化(new)
 * 字典/数组的声明
 * 静态函数/类函数
+* 接口
 
 
 **计划支持的Csharp语法/API/运算符**
 
-* 接口
 * go type的实例化函数
 * while
 * switch
@@ -35,6 +35,7 @@
 * 局部变量，变量类型不支持var; 比如：var num = 100;
 * 三元运算符
 * ?.运算符
+* Csharp的接口的get;set; 比如：int GetHp { get; set; }
 
 **差异处理**
 
