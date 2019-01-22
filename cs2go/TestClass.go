@@ -10,7 +10,8 @@ type TestClass struct {
 }
 
 var Name = "MyName"
-var Max = 100
+
+const Max = 100
 
 func Init() *TestClass {
 	var testClass = new(TestClass)

@@ -40,11 +40,6 @@
 * CSharp接口的get;set; 比如：int GetHp { get; set; }
 * 不支持while，由于go没有while控制结构
 
-**差异处理**
-
-* go没有class，所以CSharp的class当作go struct
-* go的struct无法声明初始化值，只能自定义一个函数
-* CSharp中静态函数和静态变量/静态常量 都在go里都当作全局函数/变量 
 
 **安全忽略的CSharp关键字**
 
@@ -52,6 +47,13 @@
 * namespace
 * readonly
 * 所有的访问修饰符(private,public等)
+
+**语言的差异处理**
+
+* go没有class，所以CSharp的class当作go的struct
+* go的struct无法声明初始化值，只能自定义一个函数
+* CSharp中静态函数和静态变量/静态常量 都在go里都当作全局函数/全局变量/全局常量  
+
 
 
 

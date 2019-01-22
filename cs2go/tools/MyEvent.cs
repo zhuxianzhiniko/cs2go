@@ -14,6 +14,8 @@ public  class MyEvent : CSharpParserBaseListener
 
 
     private  List<string> staticMethods;
+    
+    private List<string> constMethods;
 
 
 
@@ -125,7 +127,10 @@ public  class MyEvent : CSharpParserBaseListener
     {
         return staticMethods.IndexOf(key) != -1;
     }
-
+    public bool IsConst(string key)
+    {
+        return constMethods.IndexOf(key) != -1;
+    }
 
     private string GetGoType(string tpye)
     {
@@ -161,8 +166,11 @@ public  class MyEvent : CSharpParserBaseListener
                     }
                     else
                     {
+                        var head = "var ";
+                        if(IsConst(fieldName.GetText()))
+                            head = "const ";
                         var fieldvalue = fieldDeclarationContext.GetChild(1).GetChild(0).GetText();
-                        var str = "var " + fieldvalue;
+                        var str = head + fieldvalue;
                         goStr.AppendLine(str); 
                     }
                    
@@ -182,6 +190,7 @@ public  class MyEvent : CSharpParserBaseListener
     public override void EnterClassBody(CSharpParser.ClassBodyContext context)
     {
         staticMethods = new List<string>();
+        constMethods = new List<string>();
         for (int i = 0; i < context.ChildCount; i++)
         {
            var child =  context.GetChild(i);
@@ -200,6 +209,10 @@ public  class MyEvent : CSharpParserBaseListener
                   {
                       key = method.GetChild(1).GetText();
                   }
+                  
+                  if(child.GetChild(1).GetText() == "const")
+                  constMethods.Add(key);
+                  
                   staticMethods.Add(key);
                }
            }
