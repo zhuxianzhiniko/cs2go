@@ -17,7 +17,7 @@ func Init() *TestClass {
 	testClass.Flg = false
 	return testClass
 }
-func (tn *TestClass) GetHurt(testClass TestClass, callNum int) *int {
+func (tn *TestClass) GetHurt(testClass TestClass, callNum int) int {
 	tn.Show()
 	StShow()
 	var num = 100
@@ -31,16 +31,16 @@ func (tn *TestClass) GetHurt(testClass TestClass, callNum int) *int {
 	}
 	return cap(testClass.Strs)
 }
-func (tn *TestClass) TestFunc(num int, name string) *int {
+func (tn *TestClass) TestFunc(num int, name string) int {
 	return 100
 }
-func ShowTest(num int) *int {
+func ShowTest(num int) int {
 	return 100
 }
 func (tn *TestClass) Show() {
 }
 func StShow() {
 }
-func (tn *TestClass) GetMaxAttack() *int {
+func (tn *TestClass) GetMaxAttack() int {
 	return 100
 }

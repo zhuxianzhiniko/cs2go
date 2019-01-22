@@ -230,11 +230,11 @@ public  class MyEvent : CSharpParserBaseListener
       
         if (typeof(void).Name.ToLower() == returnType.ToLower())
             return String.Empty;
-        if (typeof(int).Name.ToLower() == returnType.ToLower())
+        if ("int" == returnType.ToLower())
             return "int";
         if (typeof(string).Name.ToLower() == returnType.ToLower())
             return "string";
-        if (typeof(bool).Name.ToLower() == returnType.ToLower())
+        if ("bool" == returnType.ToLower())
             return "bool";
         return "*" + returnType;
     }

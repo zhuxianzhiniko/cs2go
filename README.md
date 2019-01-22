@@ -17,7 +17,6 @@
 
 **计划支持的Csharp语法/API/运算符**
 
-* go type的实例化函数
 * while
 * switch
 * enum
