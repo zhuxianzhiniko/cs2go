@@ -10,7 +10,7 @@ namespace cs2go
         private static void Main(string[] args)
         {
            
-            var fileInput = File.ReadAllText(@"E:\cs2go\cs2go\ITestInterface.cs");
+            var fileInput = File.ReadAllText(@"E:\cs2go\cs2go\TestClass.cs");
             
             var stream = CharStreams.fromstring(fileInput);
             ITokenSource lexer = new CSharpLexer(stream);

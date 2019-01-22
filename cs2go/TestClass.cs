@@ -1,9 +1,6 @@
 using System.Collections.Generic;
-
-
-
 [Test]
-public class TestRole:ITestInterface
+public class TestClass:ITestInterface
 {
     public static string Name = "MyName";
     public int Attack;
@@ -15,17 +12,26 @@ public class TestRole:ITestInterface
 
     public int[] Strs;
 
+    public static TestClass Init()
+    {
+        TestClass testClass = new TestClass();
+        testClass.Attack = 10;
+        testClass.Defense = 20;
+        testClass.Flg = false;
+        return testClass;
+    }
 
-    public int GetHurt(TestRole testRole, int callNum)
+
+    public int GetHurt(TestClass testClass, int callNum)
     {
         Show();
         StShow();
         int num = 100;
-        TestRole role = new TestRole();
+        TestClass test = new TestClass();
         int dd = num * 100 + 100;
         int num3 = num + 1;
 
-        int len = role.Strs.Length;
+        int len = test.Strs.Length;
         int num1 = 101;
         for (var i = 10; i < 100; i++)
         {
@@ -33,7 +39,7 @@ public class TestRole:ITestInterface
         }
 
 
-        return testRole.Strs.Length;
+        return testClass.Strs.Length;
     }
 
 

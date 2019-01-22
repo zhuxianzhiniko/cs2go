@@ -35,12 +35,12 @@
 * 局部变量，变量类型不支持var; 比如：var num = 100;
 * 三元运算符
 * ?.运算符
-* Csharp的接口的get;set; 比如：int GetHp { get; set; }
+* Csharp接口的get;set; 比如：int GetHp { get; set; }
 
 **差异处理**
 
-* go没有class，所以Csharp的class当前go struct
-* go的struct,无法声明初始化值，只能自定义一个构造函数(根据Csharp的初始值生成一个构造函数)PS:尚未实现
+* go没有class，所以Csharp的class当作go struct
+* go的struct无法声明初始化值，只能自定义一个函数
 * go没有静态函数static标识，Csharp静态函数转译成无指针func函数
 * go没有修饰符，直接忽略掉Csharp的修饰符
 

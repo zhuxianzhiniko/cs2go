@@ -109,7 +109,7 @@ public  class MyEvent : CSharpParserBaseListener
 
     private void SaveGoFile(string str,string path)
     {
-        var bytes = Encoding.UTF8.GetBytes(goStr.ToString());
+        var bytes = Encoding.UTF8.GetBytes(str);
         File.WriteAllBytes(path, bytes);
         var info = new ProcessStartInfo();
         info.FileName = "gofmt.exe";
@@ -223,7 +223,21 @@ public  class MyEvent : CSharpParserBaseListener
         }
         base.EnterClassBody(context);
     }
-    
+
+
+    private string GetReturnType(string returnType)
+    {
+      
+        if (typeof(void).Name.ToLower() == returnType.ToLower())
+            return String.Empty;
+        if (typeof(int).Name.ToLower() == returnType.ToLower())
+            return "int";
+        if (typeof(string).Name.ToLower() == returnType.ToLower())
+            return "string";
+        if (typeof(bool).Name.ToLower() == returnType.ToLower())
+            return "bool";
+        return "*" + returnType;
+    }
 
    
     //MemberDeclaration
@@ -238,9 +252,8 @@ public  class MyEvent : CSharpParserBaseListener
         }
 
         //Console.WriteLine("Event EnterMethodDeclaration:"+context.GetText());
-        var returnType = context.GetChild(0).GetText();
-        if (typeof(void).Name.ToLower() == returnType)
-            returnType = string.Empty;
+        var returnType = GetReturnType(context.GetChild(0).GetText());
+  
 
 
         var paramets = context.GetChild(2);
