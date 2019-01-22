@@ -1,12 +1,12 @@
 **CsharpToGo的工具**
 
-* 使用[antlr4](https://www.antlr.org/about.html)对.cs文件进行语法解析生成.go代码，目前使用的是基于java4.g4修改的CSharpLexer.g4
+* 使用[antlr4](https://www.antlr.org/about.html)对.cs文件进行语法解析生成.go代码，目前使用的是基于 [java4.g4](https://github.com/antlr/antlr4/blob/master/tool-testsuite/test/org/antlr/v4/test/tool/Java.g4) 修改的CSharpLexer.g4
 * 使用[gofmt.exe](https://golang.org/cmd/gofmt/)对生成go代码进行格式化
 
 
 **已支持的语法**
 
-* 基本的所有语法 比如 int num = 100 , func() staticFun() 
+* 基本的所有语法 比如 int num = 100 , func(100) staticFun() 
 * 常规的运算符  int num = 100 - 10 * 5 + 4 / 10
 * for循环结构
 * Csharp类结构/类的实例化(new)
