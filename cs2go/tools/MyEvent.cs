@@ -179,20 +179,6 @@ public  class MyEvent : CSharpParserBaseListener
         base.EnterAttributeDeclaration(context);
     }
 
-
-//    public override void EnterClassBodyDeclaration(CSharpParser.ClassBodyDeclarationContext context)
-//    {
-//        isStatic = false;
-//        if (context.GetChild(1) is CSharpParser.ModifierContext)
-//            if (context.GetChild(1).GetText().ToLower() == "static")
-//                isStatic = true;
-//        Console.WriteLine("Event EnterClassBodyDeclaration: "+context.GetText());
-//        base.EnterClassBodyDeclaration(context);
-//    }
-
-
-  
-
     public override void EnterClassBody(CSharpParser.ClassBodyContext context)
     {
         staticMethods = new List<string>();
@@ -216,9 +202,6 @@ public  class MyEvent : CSharpParserBaseListener
                   }
                   staticMethods.Add(key);
                }
-               
- 
-               
            }
         }
         base.EnterClassBody(context);
@@ -319,7 +302,7 @@ public  class MyEvent : CSharpParserBaseListener
     //局部变量信息
     public override void EnterLocalVariableDeclaration(CSharpParser.LocalVariableDeclarationContext context)
     {
-        Console.WriteLine("evenet EnterLocalVariableDeclaration:  " + context.GetText());
+     //   Console.WriteLine("evenet EnterLocalVariableDeclaration:  " + context.GetText());
 
         if (context.Parent is CSharpParser.ForInitContext) //屏蔽掉for的语句。因为无法区别for的变量，和普通的局部变量
         {
@@ -371,7 +354,7 @@ public  class MyEvent : CSharpParserBaseListener
     //函数局部语法  
     public override void EnterStatement(CSharpParser.StatementContext context)
     {
-         //Console.WriteLine("evenet EnterStatement:  " + context.GetText());
+         Console.WriteLine("evenet EnterStatement:  " + context.GetText());
         if (context.GetChild(0) is CSharpParser.ExpressionContext) //普通的表达式
         {
             goStr.AppendLine(CSharpAPIToGo(context.GetChild(0)));
@@ -397,6 +380,10 @@ public  class MyEvent : CSharpParserBaseListener
         else if (context.GetChild(0) is TerminalNodeImpl && context.GetChild(0).GetText() == "return")//return 
         {
             goStr.AppendLine("return "+CSharpAPIToGo(context.GetChild(1)));
+        }
+        else if (context.GetChild(0) is TerminalNodeImpl && context.GetChild(0).GetText() == "while")///忽略 while 
+        {
+           
         }
 
         base.EnterStatement(context);

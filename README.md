@@ -17,7 +17,6 @@
 
 **计划支持的Csharp语法/API/运算符**
 
-* while
 * switch
 * enum
 * array/List 的增删改查API
@@ -35,6 +34,7 @@
 * 三元运算符
 * ?.运算符
 * Csharp接口的get;set; 比如：int GetHp { get; set; }
+* 不支持while，由于go没有while控制结构
 
 **差异处理**
 
@@ -42,7 +42,6 @@
 * go的struct无法声明初始化值，只能自定义一个函数
 * go没有静态函数static标识，Csharp静态函数转译成无指针func函数
 * go没有修饰符，直接忽略掉Csharp的修饰符
-
 
 
 
