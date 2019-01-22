@@ -14,39 +14,46 @@
 * 字典/数组的声明
 * 静态函数/类函数
 * 接口
-
+* const
 
 **计划支持的Csharp语法/API/运算符**
 
 * enum
 * array/List 的增删改查API
 * map/Dictionary 的增删改查API
-* const/readonly 
 * package
 
 **考虑支持的语法/API**
 
-* 局部变量，变量类型不支持var; 比如：var num = 100;
+* 局部变量，变量类型目前不支持var; 比如：var num = 100;
 * buffer类型操作
 * Random 常用API
 * Math 常用API
 
 
-**不支持的Csharp语法/API/运算符/限制**
+**不支持的CSharp语法/API/运算符/限制**
 
 * go的 [关键字](https://github.com/Unknwon/the-way-to-go_ZH_CN/blob/master/eBook/04.1.md) 不能为变量名,函数名，类名等;比如：int go = 100;
-* Csharp 继承，一般泛型（数组/字典 泛型除外），Task,async,LINQ,out,delegate等独有特性; 比如：async Task Show<T>(T num)
+* CSharp 继承，一般泛型（数组/字典 泛型除外），Task,async,LINQ,out,delegate等独有特性; 比如：async Task Show<T>(T num)
 * 三元运算符
 * ?.运算符
-* Csharp接口的get;set; 比如：int GetHp { get; set; }
+* CSharp接口的get;set; 比如：int GetHp { get; set; }
 * 不支持while，由于go没有while控制结构
 
 **差异处理**
 
-* go没有class，所以Csharp的class当作go struct
+* go没有class，所以CSharp的class当作go struct
 * go的struct无法声明初始化值，只能自定义一个函数
-* go没有静态函数static标识，Csharp静态函数转译成无指针func函数
-* go没有修饰符，直接忽略掉Csharp的修饰符
+* CSharp中静态函数和静态变量/静态常量 都在go里都当作全局函数/变量 
+
+**安全忽略的CSharp关键字**
+
+* using
+* namespace
+* readonly
+* 所有的访问修饰符(private,public等)
+
+
 
 
 

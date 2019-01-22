@@ -1,6 +1,7 @@
 package main
 
 type TestClass struct {
+	OnlyFlg bool
 	Attack  int
 	d       map[string]int
 	Defense int
@@ -9,6 +10,7 @@ type TestClass struct {
 }
 
 var Name = "MyName"
+var Max = 100
 
 func Init() *TestClass {
 	var testClass = new(TestClass)

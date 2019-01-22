@@ -3,6 +3,8 @@ using System.Collections.Generic;
 public class TestClass
 {
     public static string Name = "MyName";
+    public const int Max = 100;
+    public readonly bool OnlyFlg = false;
     public int Attack;
 
     public Dictionary<string, int> d;

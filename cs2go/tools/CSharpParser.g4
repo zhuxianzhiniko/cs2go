@@ -65,12 +65,14 @@ classOrInterfaceModifier
     | PRIVATE
     | STATIC
     | ABSTRACT
-    | FINAL    // FINAL for class only -- does not apply to interfaces
+    | CONST    // CONST for class only -- does not apply to interfaces
+    | READONLY
     | STRICTFP
     ;
 
 variableModifier
-    : FINAL
+    : CONST
+    | READONLY
     | annotation
     ;
 

@@ -48,7 +48,6 @@ DOUBLE:             'double';
 ELSE:               'else';
 ENUM:               'enum';
 EXTENDS:            'extends';
-FINAL:              'final';
 FINALLY:            'finally';
 FLOAT:              'float';
 FOR:                'for';
@@ -80,6 +79,7 @@ VOID:               'void';
 VOLATILE:           'volatile';
 WHILE:              'while';
 ASYNC:              'async';
+READONLY:           'readonly';
 
 // Literals
 

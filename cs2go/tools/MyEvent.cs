@@ -188,7 +188,7 @@ public  class MyEvent : CSharpParserBaseListener
 
            if (child is CSharpParser.ClassBodyDeclarationContext)
            {
-               if (child.ChildCount > 2 && child.GetChild(1).GetText() == "static")
+               if (child.ChildCount > 2 && (child.GetChild(1).GetText() == "static" ||child.GetChild(1).GetText() == "const"))
                {
                   var method = child.GetChild(2).GetChild(0);
                   string key = String.Empty;
