@@ -54,7 +54,6 @@ FLOAT:              'float';
 FOR:                'for';
 IF:                 'if';
 GOTO:               'goto';
-IMPLEMENTS:         'implements';
 USING:              'using';
 INSTANCEOF:         'instanceof';
 INT:                'int';

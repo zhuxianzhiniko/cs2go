@@ -34,3 +34,6 @@ func (tn *TestRole) Show() {
 }
 func StShow() {
 }
+func (tn *TestRole) GetMaxAttack() int {
+	return 100
+}

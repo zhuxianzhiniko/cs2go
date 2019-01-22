@@ -9,21 +9,8 @@ namespace cs2go
     {
         private static void Main(string[] args)
         {
-            /* String input = @"public class TestRole
-             {
-         public int Attack;
-         public int Defense;
- 
- 
-         public int GetHurt(TestRole testRole)
-         {
-             return Attack - testRole.Defense;
-         }
-     }";*/
-
-            var input = @"int num = 10;";
            
-            var fileInput = File.ReadAllText(@"E:\cs2go\cs2go\TestRole.cs");
+            var fileInput = File.ReadAllText(@"E:\cs2go\cs2go\ITestInterface.cs");
             
             var stream = CharStreams.fromstring(fileInput);
             ITokenSource lexer = new CSharpLexer(stream);
@@ -33,8 +20,6 @@ namespace cs2go
             var tree = parser.compilationUnit();
             MyEvent printer = new MyEvent();
             ParseTreeWalker.Default.Walk(printer, tree);
-         
-//          Console.WriteLine("out"+tree.GetText());
   
         }
     }

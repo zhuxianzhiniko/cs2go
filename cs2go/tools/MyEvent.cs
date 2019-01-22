@@ -6,16 +6,85 @@ using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
-public class MyEvent : CSharpParserBaseListener
+public  class MyEvent : CSharpParserBaseListener
 {
     private readonly StringBuilder goStr = new StringBuilder();
     private readonly StringBuilder member = new StringBuilder();
     private string className;
 
 
-    private List<string> staticMethods;
+    private  List<string> staticMethods;
 
-    //类名
+
+
+    public override void EnterInterfaceMethodDeclaration(CSharpParser.InterfaceMethodDeclarationContext context)
+    {
+        var returnType = context.GetChild(0).GetText();
+        if (typeof(void).Name.ToLower() == returnType)
+            returnType = string.Empty;
+
+
+        var paramets = context.GetChild(2);
+
+        var parametStr = new StringBuilder();
+        for (var i = 0; i < paramets.ChildCount; i++)
+        {
+            var iParseTree = paramets.GetChild(i);
+
+            if (iParseTree is TerminalNodeImpl)
+            {
+                parametStr.Append(iParseTree.GetText());
+            }
+            else if (iParseTree is CSharpParser.FormalParameterContext)
+            {
+                var type = iParseTree.GetChild(0);
+                var name = iParseTree.GetChild(1);
+                parametStr.Append(name.GetText() + " " + type.GetText());
+            }
+            else if (iParseTree is CSharpParser.FormalParameterListContext)
+            {
+                for (var j = 0; j < iParseTree.ChildCount; j++)
+                {
+                    var item = iParseTree.GetChild(j);
+                    if (item is TerminalNodeImpl)
+                    {
+                        parametStr.Append(item.GetText());
+                    }
+                    else if (item is CSharpParser.FormalParameterContext)
+                    {
+                        var type = item.GetChild(0);
+                        var name = item.GetChild(1);
+                        parametStr.Append(name.GetText() + " " + type.GetText());
+                    }
+                }
+            }
+        }
+        
+        goStr.AppendLine($"{context.GetChild(1)}{parametStr} {returnType}" );
+  
+        base.EnterInterfaceMethodDeclaration(context);
+    }
+
+  
+
+  
+    public override void EnterInterfaceDeclaration(CSharpParser.InterfaceDeclarationContext context)
+    {
+        className = context.GetChild(1).GetText();
+        goStr.AppendLine("package main");
+        Console.WriteLine("event EnterInterfaceDeclaration: "+context.GetText());
+        goStr.AppendLine($"type {context.GetChild(1).GetText()} {context.GetChild(0).GetText()}"+"{");
+        base.EnterInterfaceDeclaration(context);
+    }
+
+    public override void ExitInterfaceDeclaration(CSharpParser.InterfaceDeclarationContext context)
+    {
+        goStr.AppendLine("}");
+        Console.WriteLine(goStr.ToString());
+        var path = Environment.CurrentDirectory + $"\\{className}.go";
+        SaveGoFile(goStr.ToString(), path);
+        base.ExitInterfaceDeclaration(context);
+    }
 
 
     public override void EnterClassDeclaration(CSharpParser.ClassDeclarationContext context)
@@ -27,7 +96,6 @@ public class MyEvent : CSharpParserBaseListener
         base.EnterClassDeclaration(context);
     }
 
-
     public override void ExitClassDeclaration(CSharpParser.ClassDeclarationContext context)
     {
         var index = goStr.ToString().IndexOf("{", StringComparison.Ordinal);
@@ -35,10 +103,14 @@ public class MyEvent : CSharpParserBaseListener
         Console.WriteLine(goStr.ToString());
 
         var path = Environment.CurrentDirectory + $"\\{className}.go";
+        SaveGoFile(goStr.ToString(), path);
+        base.ExitClassDeclaration(context);
+    }
 
+    private void SaveGoFile(string str,string path)
+    {
         var bytes = Encoding.UTF8.GetBytes(goStr.ToString());
         File.WriteAllBytes(path, bytes);
-
         var info = new ProcessStartInfo();
         info.FileName = "gofmt.exe";
         info.WindowStyle = ProcessWindowStyle.Hidden;
@@ -47,7 +119,6 @@ public class MyEvent : CSharpParserBaseListener
         info.Arguments = "-w " + Environment.CurrentDirectory;
         Process.Start(info).WaitForExit();
 
-        base.ExitClassDeclaration(context);
     }
 
     public bool IsStatic(string key)
@@ -255,8 +326,8 @@ public class MyEvent : CSharpParserBaseListener
         {
               goStr.AppendLine("var " + name.GetChild(0).GetChild(0).GetText() + " = new(" + type.GetText() + ")");
         }
-          
 
+        
         base.EnterLocalVariableDeclaration(context);
     }
 

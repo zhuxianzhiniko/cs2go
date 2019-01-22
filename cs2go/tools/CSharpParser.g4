@@ -77,7 +77,7 @@ variableModifier
 classDeclaration
     : CLASS IDENTIFIER typeParameters?
       (EXTENDS typeType)?
-      (IMPLEMENTS typeList)?
+      (':' typeList)?
       classBody
     ;
 
@@ -94,7 +94,7 @@ typeBound
     ;
 
 enumDeclaration
-    : ENUM IDENTIFIER (IMPLEMENTS typeList)? '{' enumConstants? ','? enumBodyDeclarations? '}'
+    : ENUM IDENTIFIER (':' typeList)? '{' enumConstants? ','? enumBodyDeclarations? '}'
     ;
 
 enumConstants

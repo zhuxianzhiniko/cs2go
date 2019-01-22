@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 
+
+
 [Test]
-public class TestRole
+public class TestRole:ITestInterface
 {
     public static string Name = "MyName";
     public int Attack;
@@ -12,7 +14,6 @@ public class TestRole
     public bool Flg;
 
     public int[] Strs;
-
 
 
     public int GetHurt(TestRole testRole, int callNum)
@@ -53,5 +54,10 @@ public class TestRole
 
     public static void StShow()
     {
+    }
+
+    public int GetMaxAttack()
+    {
+        return 100;
     }
 }
