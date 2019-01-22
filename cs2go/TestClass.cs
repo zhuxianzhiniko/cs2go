@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 [Test]
-public class TestClass:ITestInterface
+public class TestClass
 {
     public static string Name = "MyName";
     public int Attack;
@@ -37,7 +37,23 @@ public class TestClass:ITestInterface
         {
             num1++;
         }
-
+        switch (num1)
+        {
+           case 1:
+               num1+=1;
+               break;
+           
+           case 2:
+               num1+=2;
+               break;
+           case 3:
+               num1+=3;
+               break;
+           default:
+               num1+=10;
+               break;
+        }
+    
 
         return testClass.Strs.Length;
     }

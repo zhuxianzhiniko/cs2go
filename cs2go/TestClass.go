@@ -29,6 +29,20 @@ func (tn *TestClass) GetHurt(testClass TestClass, callNum int) int {
 	for i := 10; i > 100; i++ {
 		num1++
 	}
+	switch num1 {
+	case 1:
+		num1 += 1
+		break
+	case 2:
+		num1 += 2
+		break
+	case 3:
+		num1 += 3
+		break
+	default:
+		num1 += 10
+		break
+	}
 	return cap(testClass.Strs)
 }
 func (tn *TestClass) TestFunc(num int, name string) int {

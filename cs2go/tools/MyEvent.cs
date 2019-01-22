@@ -293,6 +293,29 @@ public  class MyEvent : CSharpParserBaseListener
         base.EnterBlock(context);
     }
 
+    public override void EnterSwitchBlockStatementGroup(CSharpParser.SwitchBlockStatementGroupContext context)
+    {
+       // Console.WriteLine("evenet  EnterSwitchBlockStatementGroup:  " + context.GetText());
+        base.EnterSwitchBlockStatementGroup(context);
+    }
+    
+
+    public override void EnterSwitchLabel(CSharpParser.SwitchLabelContext context)
+    {
+        if (context.ChildCount == 2)
+        {
+            goStr.AppendLine(context.GetChild(0).GetText()+" "+ context.GetChild(1).GetText());
+        }
+        else
+        {
+            goStr.AppendLine(context.GetChild(0).GetText()+" "+ context.GetChild(1).GetText()+context.GetChild(2).GetText());
+        }
+        
+        
+       // Console.WriteLine("evenet  EnterSwitchLabel:  " + context.GetText());
+        base.EnterSwitchLabel(context);
+    }
+
     public override void ExitBlock(CSharpParser.BlockContext context)
     {
         goStr.AppendLine("}");
@@ -302,7 +325,7 @@ public  class MyEvent : CSharpParserBaseListener
     //局部变量信息
     public override void EnterLocalVariableDeclaration(CSharpParser.LocalVariableDeclarationContext context)
     {
-     //   Console.WriteLine("evenet EnterLocalVariableDeclaration:  " + context.GetText());
+      // Console.WriteLine("evenet EnterLocalVariableDeclaration:  " + context.GetText());
 
         if (context.Parent is CSharpParser.ForInitContext) //屏蔽掉for的语句。因为无法区别for的变量，和普通的局部变量
         {
@@ -381,12 +404,31 @@ public  class MyEvent : CSharpParserBaseListener
         {
             goStr.AppendLine("return "+CSharpAPIToGo(context.GetChild(1)));
         }
+        else if (context.GetChild(0) is TerminalNodeImpl && context.GetChild(0).GetText() == "break")//return 
+        {
+            goStr.AppendLine(CSharpAPIToGo(context.GetChild(0)));
+        }
         else if (context.GetChild(0) is TerminalNodeImpl && context.GetChild(0).GetText() == "while")///忽略 while 
         {
            
+        }
+        else if (context.GetChild(0) is TerminalNodeImpl && context.GetChild(0).GetText() == "switch")///忽略 while 
+        {
+            var ex = context.GetChild(1).GetText().Replace("(","").Replace(")","");
+            goStr.AppendLine(context.GetChild(0).GetText()+" "+ex +"{");
+            Console.WriteLine("evenet EnterStatement:  " + context.GetText());
         }
 
         base.EnterStatement(context);
     }
 
+    public override void ExitStatement(CSharpParser.StatementContext context)
+    {
+         if (context.GetChild(0) is TerminalNodeImpl && context.GetChild(0).GetText() == "switch")///switch
+        {
+            goStr.AppendLine("}");
+           
+        }
+        base.ExitStatement(context);
+    }
 }

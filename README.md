@@ -13,11 +13,10 @@
 * 字典/数组的声明
 * 静态函数/类函数
 * 接口
-
+* switch
 
 **计划支持的Csharp语法/API/运算符**
 
-* switch
 * enum
 * array/List 的增删改查API
 * map/Dictionary 的增删改查API
