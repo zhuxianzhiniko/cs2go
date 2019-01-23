@@ -18,7 +18,6 @@
 
 **计划支持的Csharp语法/API/运算符**
 
-* enum
 * array/List 的增删改查API
 * map/Dictionary 的增删改查API
 * package
@@ -52,7 +51,8 @@
 
 * go没有class，所以CSharp的class当作go的struct
 * go的struct无法声明初始化值，只能自定义一个函数
-* CSharp中静态函数和静态变量/静态常量 都在go里都当作全局函数/全局变量/全局常量  
+* CSharp中静态函数和静态变量/静态常量 都在go里都当作全局函数/全局变量/全局常量
+* go没有Enum类型，使用iota模拟CSharp Enum; [参考实现](https://studygolang.com/articles/5386)
 
 
 
