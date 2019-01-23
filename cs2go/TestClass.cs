@@ -23,10 +23,10 @@ public class TestClass
         return testClass;
     }
     
-    public enum MyEnum
+    public enum MyTestEnum
     {
-        One,
-        Tow
+        One1,
+        Tow1
     }
 
 

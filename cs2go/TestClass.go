@@ -21,11 +21,11 @@ func Init() *TestClass {
 	return testClass
 }
 
-type MyEnum int
+type MyTestEnum int
 
 const (
-	One MyEnum = iota
-	Tow
+	One1 MyTestEnum = iota
+	Tow1
 )
 
 func (tn *TestClass) GetHurt(testClass TestClass, callNum int) int {
