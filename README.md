@@ -4,8 +4,9 @@
 * 使用[gofmt.exe](https://golang.org/cmd/gofmt/)对生成go代码进行格式化
 
 
-## 已支持的语法
+## 语法支持
 
+**已支持的语法**
 * 基本的所有语法 比如 int num = 100 , func(100) staticFun() 
 * 常规的运算符  int num = 100 - 10 * 5 + 4 / 10
 * for
