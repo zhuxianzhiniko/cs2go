@@ -283,11 +283,6 @@ public  class MyEvent : CSharpParserBaseListener
     //类函数 
     public override void EnterMethodDeclaration(CSharpParser.MethodDeclarationContext context)
     {
-        for (var i = 0; i < context.ChildCount; i++)
-        {
-            var child = context.GetChild(i);
-            //      Console.WriteLine("child"+i+": "+child.GetText());
-        }
 
         //Console.WriteLine("Event EnterMethodDeclaration:"+context.GetText());
         var returnType = GetReturnType(context.GetChild(0).GetText());
@@ -339,21 +334,11 @@ public  class MyEvent : CSharpParserBaseListener
         base.EnterMethodDeclaration(context);
     }
 
-
- 
-
     public override void EnterBlock(CSharpParser.BlockContext context)
     {
         goStr.Append("{"+"\n");
         base.EnterBlock(context);
     }
-
-    public override void EnterSwitchBlockStatementGroup(CSharpParser.SwitchBlockStatementGroupContext context)
-    {
-       // Console.WriteLine("evenet  EnterSwitchBlockStatementGroup:  " + context.GetText());
-        base.EnterSwitchBlockStatementGroup(context);
-    }
-    
 
     public override void EnterSwitchLabel(CSharpParser.SwitchLabelContext context)
     {

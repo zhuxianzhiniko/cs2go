@@ -2,6 +2,8 @@
 using System.IO;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 
 namespace cs2go
 {
@@ -21,6 +23,14 @@ namespace cs2go
             MyEvent printer = new MyEvent();
             ParseTreeWalker.Default.Walk(printer, tree);
   
+            
+            var roslynTree = CSharpSyntaxTree.ParseText(fileInput);
+
+           /*var root = (CompilationUnitSyntax)tree.GetRoot();
+            var modelCollector = new ModelCollector();
+            modelCollector.Visit(root)*/
+            Console.WriteLine();
+         
         }
     }
 }
