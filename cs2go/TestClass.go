@@ -20,6 +20,14 @@ func Init() *TestClass {
 	testClass.Flg = false
 	return testClass
 }
+
+type MyEnum int
+
+const (
+	One MyEnum = iota
+	Tow
+)
+
 func (tn *TestClass) GetHurt(testClass TestClass, callNum int) int {
 	tn.Show()
 	StShow()

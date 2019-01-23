@@ -11,6 +11,7 @@ public  class MyEvent : CSharpParserBaseListener
     private readonly StringBuilder goStr = new StringBuilder();
     private readonly StringBuilder member = new StringBuilder();
     private string className;
+    private string curEnumName;
 
 
     private  List<string> staticMethods;
@@ -150,9 +151,51 @@ public  class MyEvent : CSharpParserBaseListener
         return tpye;
     }
 
+
+
+    public override void EnterEnumDeclaration(CSharpParser.EnumDeclarationContext context)
+    {
+        curEnumName = context.GetChild(1).GetText();
+
+        goStr.AppendLine($"type {curEnumName} int");
+        goStr.AppendLine($"const (");
+
+       // Console.WriteLine("evenet EnterEnumDeclaration:  "+"  "+ context.GetText());
+        base.EnterEnumDeclaration(context);
+    }
+
+    public override void ExitEnumDeclaration(CSharpParser.EnumDeclarationContext context)
+    {
+        goStr.AppendLine($")");
+        base.ExitEnumDeclaration(context);
+    }
+
+    public override void EnterEnumConstants(CSharpParser.EnumConstantsContext context)
+    {
+        for (int i = 0; i <  context.ChildCount; i++)
+        {
+            if (context.GetChild(i) is CSharpParser.EnumConstantContext)
+            {
+                if (i == 0)
+                {
+                    goStr.AppendLine($"{context.GetChild(i).GetText()} {curEnumName} = iota");
+                }
+                else
+                {
+                    goStr.AppendLine($"{context.GetChild(i).GetText()}");
+                }
+            }
+        }
+        
+        //Console.WriteLine("evenet EnterEnumConstants:  "+"  "+ context.GetText());
+        base.EnterEnumConstants(context);
+    }
+    
+
     //类成员    int Attack;
     public override void EnterMemberDeclaration(CSharpParser.MemberDeclarationContext context)
     {
+        //Console.WriteLine("evenet EnterMemberDeclaration:  "+"  "+ context.GetText());
         for (var i = 0; i < context.ChildCount; i++)
             if (context.GetChild(i) is CSharpParser.FieldDeclarationContext)
                 if (context.GetChild(i) is CSharpParser.FieldDeclarationContext fieldDeclarationContext)
@@ -176,7 +219,6 @@ public  class MyEvent : CSharpParserBaseListener
                    
                 }
 
-        // Console.WriteLine("evenet EnterMemberDeclaration:  "+isStatic.ToString() +"  "+ context.GetText());
         base.EnterMemberDeclaration(context);
     }
 
@@ -390,7 +432,7 @@ public  class MyEvent : CSharpParserBaseListener
     //函数局部语法  
     public override void EnterStatement(CSharpParser.StatementContext context)
     {
-         Console.WriteLine("evenet EnterStatement:  " + context.GetText());
+        //Console.WriteLine("evenet EnterStatement:  " + context.GetText());
         if (context.GetChild(0) is CSharpParser.ExpressionContext) //普通的表达式
         {
             goStr.AppendLine(CSharpAPIToGo(context.GetChild(0)));

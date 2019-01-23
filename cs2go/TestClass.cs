@@ -22,6 +22,12 @@ public class TestClass
         testClass.Flg = false;
         return testClass;
     }
+    
+    public enum MyEnum
+    {
+        One,
+        Tow
+    }
 
 
     public int GetHurt(TestClass testClass, int callNum)
@@ -78,6 +84,7 @@ public class TestClass
 
     public static void StShow()
     {
+        
     }
 
     public int GetMaxAttack()
