@@ -1,9 +1,16 @@
 using System.Collections.Generic;
+
 [Test]
 public class TestClass
 {
-    public static string Name = "MyName";
+    public enum MyTestEnum
+    {
+        One1,
+        Tow1
+    }
+
     public const int Max = 100;
+    public static string Name = "MyName";
     public readonly bool OnlyFlg = false;
     public int Attack;
 
@@ -16,17 +23,11 @@ public class TestClass
 
     public static TestClass Init()
     {
-        TestClass testClass = new TestClass();
+        var testClass = new TestClass();
         testClass.Attack = 10;
         testClass.Defense = 20;
         testClass.Flg = false;
         return testClass;
-    }
-    
-    public enum MyTestEnum
-    {
-        One1,
-        Tow1
     }
 
 
@@ -34,36 +35,38 @@ public class TestClass
     {
         Show();
         StShow();
-        int num = 100;
-        TestClass test = new TestClass();
-        int dd = num * 100 + 100;
-        int num3 = num + 1;
+        var num = 100;
+        var test = new TestClass();
+        var dd = num * 100 + 100;
+        var num3 = num + 1;
 
-        int len = test.Strs.Length;
-        int num1 = 101;
-        for (var i = 10; i < 100; i++)
+        var len = test.Strs.Length;
+        var num1 = 101;
+        for (int i = 10; i < 100; i++)
         {
             num1++;
         }
+
         switch (num1)
         {
-           case 1:
-               num1+=1;
-               break;
-           
-           case 2:
-               num1+=2;
-               break;
-           case 3:
-               num1+=3;
-               break;
-           default:
-               num1+=10;
-               break;
+            case 1:
+                num1 += 1;
+                break;
+
+            case 2:
+                num1 += 2;
+                break;
+            case 3:
+                num1 += 3;
+                break;
+            default:
+                num1 += 10;
+                break;
         }
-    
+
 
         return testClass.Strs.Length;
+        return 0;
     }
 
 
@@ -84,7 +87,6 @@ public class TestClass
 
     public static void StShow()
     {
-        
     }
 
     public int GetMaxAttack()

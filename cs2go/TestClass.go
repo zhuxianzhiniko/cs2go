@@ -8,10 +8,15 @@ type TestClass struct {
 	Flg     bool
 	Strs    []int
 }
+type MyTestEnum int
+
+const (
+	One1 MyTestEnum = iota
+	Tow1
+)
+const Max = 100
 
 var Name = "MyName"
-
-const Max = 100
 
 func Init() *TestClass {
 	var testClass = new(TestClass)
@@ -20,14 +25,6 @@ func Init() *TestClass {
 	testClass.Flg = false
 	return testClass
 }
-
-type MyTestEnum int
-
-const (
-	One1 MyTestEnum = iota
-	Tow1
-)
-
 func (tn *TestClass) GetHurt(testClass TestClass, callNum int) int {
 	tn.Show()
 	StShow()
@@ -55,6 +52,7 @@ func (tn *TestClass) GetHurt(testClass TestClass, callNum int) int {
 		break
 	}
 	return cap(testClass.Strs)
+	return 0
 }
 func (tn *TestClass) TestFunc(num int, name string) int {
 	return 100

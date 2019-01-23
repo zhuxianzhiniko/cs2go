@@ -1,10 +1,10 @@
-**CsharpToGo的工具**
+## CsharpToGo的工具
 
 * 使用[antlr4](https://www.antlr.org/about.html)对.cs文件进行语法解析生成.go代码，目前使用的是基于 [java4.g4](https://github.com/antlr/antlr4/blob/master/tool-testsuite/test/org/antlr/v4/test/tool/Java.g4) 修改的CSharpLexer.g4
 * 使用[gofmt.exe](https://golang.org/cmd/gofmt/)对生成go代码进行格式化
 
 
-**已支持的语法**
+## 已支持的语法
 
 * 基本的所有语法 比如 int num = 100 , func(100) staticFun() 
 * 常规的运算符  int num = 100 - 10 * 5 + 4 / 10
@@ -16,6 +16,7 @@
 * 接口
 * const
 * enum
+* 局部变量var 
 
 **计划支持的Csharp语法/API/运算符**
 
@@ -25,9 +26,7 @@
 
 **考虑支持的语法/API**
 
-* 局部变量，变量类型目前不支持var; 比如：var num = 100;
 * buffer类型操作
-* Random 常用API
 * Math 常用API
 
 
@@ -41,14 +40,14 @@
 * 不支持while，由于go没有while控制结构
 
 
-**安全忽略的CSharp关键字**
+## 安全忽略的CSharp关键字
 
 * using
 * namespace
 * readonly
 * 所有的访问修饰符(private,public等)
 
-**语言的差异处理**
+## 语言的差异处理
 
 * go没有class，所以CSharp的class当作go的struct
 * go的struct无法声明初始化值，只能自定义一个函数

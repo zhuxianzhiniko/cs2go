@@ -80,6 +80,7 @@ VOLATILE:           'volatile';
 WHILE:              'while';
 ASYNC:              'async';
 READONLY:           'readonly';
+VAR:                'var';
 
 // Literals
 

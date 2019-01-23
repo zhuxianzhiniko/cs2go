@@ -598,6 +598,7 @@ primitiveType
     | LONG
     | FLOAT
     | DOUBLE
+    | VAR
     ;
 
 typeArguments

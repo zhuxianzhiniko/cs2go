@@ -380,7 +380,7 @@ public  class MyEvent : CSharpParserBaseListener
     //局部变量信息
     public override void EnterLocalVariableDeclaration(CSharpParser.LocalVariableDeclarationContext context)
     {
-      // Console.WriteLine("evenet EnterLocalVariableDeclaration:  " + context.GetText());
+     Console.WriteLine("evenet EnterLocalVariableDeclaration:  " + context.GetText());
 
         if (context.Parent is CSharpParser.ForInitContext) //屏蔽掉for的语句。因为无法区别for的变量，和普通的局部变量
         {
@@ -390,16 +390,16 @@ public  class MyEvent : CSharpParserBaseListener
         var type = context.GetChild(0);
         var name = context.GetChild(1);
 
-   
+        Console.WriteLine("name EnterLocalVariableDeclaration:  " + name.GetText());
             
-         if(type.GetChild(0) is CSharpParser.PrimitiveTypeContext )
+         if (   name.GetChild(0).GetChild(2).GetText().IndexOf("new", StringComparison.Ordinal)!=-1)
         {
-            goStr.AppendLine($"var {name.GetChild(0).GetChild(0).GetText()}={CSharpAPIToGo(name.GetChild(0)?.GetChild(2))}");
+              goStr.AppendLine("var " + name.GetChild(0).GetChild(0).GetText() + " = new(" +name.GetChild(0).GetChild(2).GetChild(0).GetChild(1).GetChild(0).GetText() + ")");
         }
-        else if (type.GetChild(0) is CSharpParser.ClassOrInterfaceTypeContext)
-        {
-              goStr.AppendLine("var " + name.GetChild(0).GetChild(0).GetText() + " = new(" + type.GetText() + ")");
-        }
+         else if(type.GetChild(0) is CSharpParser.PrimitiveTypeContext )
+         {
+             goStr.AppendLine($"var {name.GetChild(0).GetChild(0).GetText()}={CSharpAPIToGo(name.GetChild(0)?.GetChild(2))}");
+         }
 
         
         base.EnterLocalVariableDeclaration(context);
@@ -471,7 +471,7 @@ public  class MyEvent : CSharpParserBaseListener
         {
             var ex = context.GetChild(1).GetText().Replace("(","").Replace(")","");
             goStr.AppendLine(context.GetChild(0).GetText()+" "+ex +"{");
-            Console.WriteLine("evenet EnterStatement:  " + context.GetText());
+         //   Console.WriteLine("evenet EnterStatement:  " + context.GetText());
         }
 
         base.EnterStatement(context);
@@ -479,7 +479,7 @@ public  class MyEvent : CSharpParserBaseListener
 
     public override void ExitStatement(CSharpParser.StatementContext context)
     {
-         if (context.GetChild(0) is TerminalNodeImpl && context.GetChild(0).GetText() == "switch")///switch
+        if (context.GetChild(0) is TerminalNodeImpl && context.GetChild(0).GetText() == "switch")///switch
         {
             goStr.AppendLine("}");
            
