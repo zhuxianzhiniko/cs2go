@@ -15,4 +15,16 @@
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.11.0-beta1-final" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Analyzer1.cs">
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="CodeFix1.cs">
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Refactoring1.cs">
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
+
 </Project>
