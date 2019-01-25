@@ -31,6 +31,7 @@ namespace cs2go.tools
         //API
 
         public const string REMOVEAT = "RemoveAt";
+        public const string ADD = "Add";
 
 
         public void AnalyzerStart(string code)
@@ -377,16 +378,13 @@ namespace cs2go.tools
                         var str = syntaxNode.ArgumentList.ToString().Replace("(", "").Replace(")", "");
                         return $"{ex.Expression} = append({ex.Expression}[:{str}], {ex.Expression}[{str}+1:]...)";
                     }
-                    
-//                    GetMemberAccessExpression((MemberAccessExpressionSyntax) syntaxNode.Expression);
+                    if (ex.Name.ToString() == ADD)
+                    {
+                        var str = syntaxNode.ArgumentList.ToString().Replace("(", "").Replace(")", "");
+                        return $"{ex.Expression} = append({ex.Expression}, {str})";
+                    }
                 }
-
-
-                /* if (memberAccessExpressionSyntax.Name.ToString() == REMOVEAT)
-                 {
-                     return "cap(" + memberAccessExpressionSyntax.Expression + ")";
-                 }*/
-                return $"{TH}." + expressionSyntax;
+                return String.Empty;
             }
 
             if (expressionSyntax is ObjectCreationExpressionSyntax)

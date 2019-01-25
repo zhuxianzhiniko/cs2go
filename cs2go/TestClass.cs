@@ -33,9 +33,8 @@ public class TestClass
         List<int> d1= new List<int>(){1,2,3,4};
        // var listLen = d1.Count;
     //    var arrLen = d.Length;
-        Show();
         d1.RemoveAt(0);
-
+        d1.Add(100);
         /*int num1 = 100;
         var ex = 100 + 2 - 10 * 100 / 2;
         var num = GetMaxAttack(callNum);

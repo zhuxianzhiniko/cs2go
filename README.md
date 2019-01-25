@@ -23,6 +23,7 @@
 * `List.RemoveAt(0)` To `List = append(List[:0], a[0+1:]...)`
 * `list.Count` To `cap(list)`
 * `list.Length` To `cap(list)`
+* `list.Add(100)` To `	list = append(list, 100)`
 
 
 
