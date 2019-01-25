@@ -33,7 +33,7 @@ namespace cs2go.tools
         public const string REMOVEAT = "RemoveAt";
         public const string ADD = "Add";
 
-
+        public const string CLEAR = "Clear";
         public void AnalyzerStart(string code)
         {
             var roslynTree = CSharpSyntaxTree.ParseText(code);
@@ -382,6 +382,11 @@ namespace cs2go.tools
                     {
                         var str = syntaxNode.ArgumentList.ToString().Replace("(", "").Replace(")", "");
                         return $"{ex.Expression} = append({ex.Expression}, {str})";
+                    }
+                    
+                    if (ex.Name.ToString() == CLEAR)
+                    {
+                        return $"{ex.Expression} = {ex.Expression}[:0:0]";
                     }
                 }
                 return String.Empty;

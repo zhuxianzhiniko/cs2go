@@ -35,6 +35,7 @@ public class TestClass
     //    var arrLen = d.Length;
         d1.RemoveAt(0);
         d1.Add(100);
+        d1.Clear();
         /*int num1 = 100;
         var ex = 100 + 2 - 10 * 100 / 2;
         var num = GetMaxAttack(callNum);
