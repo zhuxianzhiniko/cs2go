@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
+using System.Threading.Tasks;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
+using cs2go.tools;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -16,9 +18,9 @@ namespace cs2go
         private static void Main(string[] args)
         {
            
-            var fileInput = File.ReadAllText(@"E:\cs2go\cs2go\TestClass.cs");
+           var fileInput = File.ReadAllText(@"E:\cs2go\cs2go\TestClass.cs");
             
-          /*  var stream = CharStreams.fromstring(fileInput);
+             /*var stream = CharStreams.fromstring(fileInput);
             ITokenSource lexer = new CSharpLexer(stream);
             ITokenStream tokens = new CommonTokenStream(lexer);
             var parser = new CSharpParser(tokens);
@@ -27,10 +29,19 @@ namespace cs2go
             MyEvent printer = new MyEvent();
             ParseTreeWalker.Default.Walk(printer, tree);*/
   
-            var roslynTree = CSharpSyntaxTree.ParseText(fileInput);
+             AnalyzerToGolang analyzerToGolang = new AnalyzerToGolang();
+             analyzerToGolang.AnalyzerStart(fileInput);
+             
+           /* var roslynTree = CSharpSyntaxTree.ParseText(fileInput);
             CompilationUnitSyntax syntax = (CompilationUnitSyntax)roslynTree.GetRoot();
-            //    roslynTree.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.LocalDeclarationStatement);
+        
             var d =  syntax.DescendantNodes();
+
+            foreach (var VARIABLE in d)
+            {
+                Console.WriteLine(VARIABLE.ToString());
+            }
+            
             for (int i = 0; i < syntax.Members.Count; i++)
             {
                 ClassDeclarationSyntax member = (ClassDeclarationSyntax)syntax.Members[i];
@@ -42,7 +53,7 @@ namespace cs2go
                     Console.WriteLine( member.Members[j].GetText().ToString());
                 }
 
-            }
+            }*/
 
             Console.ReadLine();
          
