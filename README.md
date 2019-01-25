@@ -1,7 +1,7 @@
 ## CsharpToGo的工具
 
-* 使用[roslyn](https://github.com/dotnet/roslyn)对.cs文件进行代码分析,根据go语法特性生成go代码
-* 使用[gofmt.exe](https://golang.org/cmd/gofmt/)对生成go代码进行格式化
+* 使用[ roslyn ](https://github.com/dotnet/roslyn)对.cs文件进行代码分析,根据go语法特性生成go代码
+* 使用[ gofmt.exe ](https://golang.org/cmd/gofmt/)对生成go代码进行格式化
 
 
 ## 语法支持
@@ -18,16 +18,10 @@
 * enum
 * 局部变量var 
 
-**计划支持的Csharp语法/API/运算符**
+**已转译的Csharp API**
 
-* array/List 的增删改查API
-* map/Dictionary 的增删改查API
+* `List.RemoveAt(0)` To GolangAPI  `List = append(List[:0], a[0+1:]...)`
 
-
-**考虑支持的语法/API**
-
-* buffer类型操作
-* Math 常用API
 
 
 **因为go的语言特性而限制的Csharp语法/API**
@@ -47,6 +41,7 @@
 * CSharp中静态函数和静态变量/静态常量 都在go里都当作全局函数/全局变量/全局常量
 * go没有Enum类型，使用iota模拟CSharp Enum; [参考实现](https://studygolang.com/articles/5386)
 * CSharp array/List 对于go来讲都是切片(Slice)
+* 由于go的切片(Slice)只有对索引的操作，在CSharp这边也统一使用只对索引进行操作的API。list.RemoveAt(0);
 
 
 

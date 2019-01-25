@@ -7,12 +7,14 @@ const (
 	Tow1
 )
 
+func (th *TestClass) Show() {
+
+}
 func (th *TestClass) GetHurt(list []int, testClass TestClass, callNum int) int {
-	var d = []int{1, 2}
 	var d1 = []int{1, 2, 3, 4}
-	var listLen = cap(d1)
-	var arrLen = cap(d)
-	return cap(d)
+	th.Show()
+	d1 = append(d1[:0], d1[0+1:]...)
+	return cap(d1)
 
 }
 

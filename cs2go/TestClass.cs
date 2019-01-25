@@ -23,14 +23,18 @@ public class TestClass
         testClass.Flg = false;
         return testClass;
     }*/
-
+     public void Show()
+     {
+     }
 
     public int GetHurt(List<int> list, TestClass testClass, int callNum)
     {
-        int[] d = new int[] {1, 2};
+       // int[] d = new int[] {1, 2};
         List<int> d1= new List<int>(){1,2,3,4};
-        var listLen = d1.Count;
-        var arrLen = d.Length;
+       // var listLen = d1.Count;
+    //    var arrLen = d.Length;
+        Show();
+        d1.RemoveAt(0);
 
         /*int num1 = 100;
         var ex = 100 + 2 - 10 * 100 / 2;
@@ -75,7 +79,7 @@ public class TestClass
  
  
          return testClass.Strs.Length;*/
-        return d.Length;
+        return d1.Count;
     }
 
 

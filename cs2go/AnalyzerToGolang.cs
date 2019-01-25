@@ -28,6 +28,11 @@ namespace cs2go.tools
         public const string TH = "th";
 
 
+        //API
+
+        public const string REMOVEAT = "RemoveAt";
+
+
         public void AnalyzerStart(string code)
         {
             var roslynTree = CSharpSyntaxTree.ParseText(code);
@@ -138,6 +143,7 @@ namespace cs2go.tools
                     main.AppendLine($"{member.Identifier}");
                 }
             }
+
             main.AppendLine($")");
         }
 
@@ -281,7 +287,29 @@ namespace cs2go.tools
         /// <returns></returns>
         private string AnalyzerReturnStatement(ReturnStatementSyntax returnStatementSyntax)
         {
-            return $"{returnStatementSyntax.ReturnKeyword.ToString()} {AnalyzerExpression(returnStatementSyntax.Expression)}";
+            return
+                $"{returnStatementSyntax.ReturnKeyword.ToString()} {AnalyzerExpression(returnStatementSyntax.Expression)}";
+        }
+
+
+        private string GetMemberAccessExpression(MemberAccessExpressionSyntax memberAccessExpressionSyntax)
+        {
+            if (memberAccessExpressionSyntax.Name.ToString() == COUNT)
+            {
+                return "cap(" + memberAccessExpressionSyntax.Expression + ")";
+            }
+
+            if (memberAccessExpressionSyntax.Name.ToString() == LENGHT)
+            {
+                return "cap(" + memberAccessExpressionSyntax.Expression + ")";
+            }
+
+            if (memberAccessExpressionSyntax.Name.ToString() == REMOVEAT)
+            {
+                return $"append({memberAccessExpressionSyntax.Expression}[:i], a[i+1:]...)";
+            }
+
+            return memberAccessExpressionSyntax.ToString();
         }
 
         /// <summary>
@@ -298,21 +326,9 @@ namespace cs2go.tools
 
             if (expressionSyntax is MemberAccessExpressionSyntax)
             {
-                MemberAccessExpressionSyntax memberAccessExpressionSyntax =
-                    (MemberAccessExpressionSyntax) expressionSyntax;
-
-                if (memberAccessExpressionSyntax.Name.ToString() == COUNT)
-                {
-                    return "cap(" + memberAccessExpressionSyntax.Expression + ")";
-                }
-                if (memberAccessExpressionSyntax.Name.ToString() == LENGHT)
-                {
-                    return "cap(" + memberAccessExpressionSyntax.Expression + ")";
-                }
-                
-                return expressionSyntax.ToString();
+                return GetMemberAccessExpression((MemberAccessExpressionSyntax)expressionSyntax);
             }
-            
+
             if (expressionSyntax is IdentifierNameSyntax)
             {
                 return "*" + expressionSyntax;
@@ -343,12 +359,33 @@ namespace cs2go.tools
             {
                 InvocationExpressionSyntax syntaxNode = (InvocationExpressionSyntax) expressionSyntax;
 
-                bool isStatic = GetStatic(syntaxNode.Expression.ToString());
-                if (isStatic)
+                if (syntaxNode.Expression is IdentifierNameSyntax)
                 {
-                    return expressionSyntax.ToString();
+                    bool isStatic = GetStatic(syntaxNode.Expression.ToString());
+                    if (isStatic)
+                    {
+                        return expressionSyntax.ToString();
+                    }
+
+                    return $"{TH}." + expressionSyntax;
+                }
+                if (syntaxNode.Expression is MemberAccessExpressionSyntax)
+                {
+                    MemberAccessExpressionSyntax ex =(MemberAccessExpressionSyntax)syntaxNode.Expression;
+                    if (ex.Name.ToString() == REMOVEAT)
+                    {
+                        var str = syntaxNode.ArgumentList.ToString().Replace("(", "").Replace(")", "");
+                        return $"{ex.Expression} = append({ex.Expression}[:{str}], {ex.Expression}[{str}+1:]...)";
+                    }
+                    
+//                    GetMemberAccessExpression((MemberAccessExpressionSyntax) syntaxNode.Expression);
                 }
 
+
+                /* if (memberAccessExpressionSyntax.Name.ToString() == REMOVEAT)
+                 {
+                     return "cap(" + memberAccessExpressionSyntax.Expression + ")";
+                 }*/
                 return $"{TH}." + expressionSyntax;
             }
 
@@ -445,23 +482,24 @@ namespace cs2go.tools
             {
                 return typeSyntax.ToString();
             }
-            else if (typeSyntax is IdentifierNameSyntax)
+
+            if (typeSyntax is IdentifierNameSyntax)
             {
                 return typeSyntax.ToString();
             }
-            else if (typeSyntax is GenericNameSyntax)
+
+            if (typeSyntax is GenericNameSyntax)
             {
                 var typeArgumen = (typeSyntax as GenericNameSyntax).TypeArgumentList.ToString();
                 return "[]" + typeArgumen.Replace("<", "").Replace(">", "");
             }
-            else if (typeSyntax is ArrayTypeSyntax)
+
+            if (typeSyntax is ArrayTypeSyntax)
             {
                 return "[]" + ((ArrayTypeSyntax) typeSyntax).ElementType;
             }
-            else
-            {
-                return typeSyntax.ToString();
-            }
+
+            return typeSyntax.ToString();
         }
     }
 }
