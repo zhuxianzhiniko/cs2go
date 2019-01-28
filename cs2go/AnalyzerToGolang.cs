@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -12,6 +13,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace cs2go.tools
 {
+
+    
     public class AnalyzerToGolang
     {
         private ClassDeclarationSyntax classDeclarationSyntax;
@@ -19,6 +22,7 @@ namespace cs2go.tools
         private StringBuilder main = new StringBuilder();
         private StringBuilder structInfo = new StringBuilder();
 
+        //关键字
         public const string STATICKEY = "static";
         public const string READONLYKEY = "readonly";
         public const string CONST = "const";
@@ -36,6 +40,48 @@ namespace cs2go.tools
         public const string REMOVEAT = "RemoveAt";
         public const string ADD = "Add";
         public const string CLEAR = "Clear";
+        
+        
+        //类型
+        
+        public const string INT = "int";
+        public const string UINT = "uint";
+        
+        public const string USHORT = "ushort";
+        public const string SHORT = "short";
+        
+        public const string ULONG = "ulong";
+        public const string LONG = "long";
+        
+        public const string FLOAT = "float";
+        public const string DOUBLE = "double";
+        
+        public const string STRING = "string";
+
+        public const string BOOL = "bool";
+    
+        /// <summary>
+        /// 基元类型字典  key为CSharp类型，value对应go的类型
+        /// </summary>
+        public Dictionary<string,string> PrimitiveTypes = new Dictionary<string, string>()
+        {
+            {INT,"int"},
+            {UINT,"uint32"},
+
+            
+            {USHORT,"uint16"},
+            {SHORT,"int16"},
+            
+            {ULONG,"uint64"},
+            {LONG,"int64"},
+            
+            {FLOAT,"float32"},
+            {DOUBLE,"float64"},
+            
+            {STRING,"string"},
+            {BOOL,"bool"},
+        };
+
 
         public void AnalyzerStart(string code)
         {
@@ -109,7 +155,7 @@ namespace cs2go.tools
             }
             return false;
         }
-
+        
         private bool GetFieldStatic(string fieldName)
         {
             for (int i = 0; i < classDeclarationSyntax.Members.Count; i++)
@@ -144,6 +190,10 @@ namespace cs2go.tools
             return false;
         }
 
+        /// <summary>
+        /// enum转译
+        /// </summary>
+        /// <param name="enumDeclarationSyntax"></param>
         private void AnalyzerEnum(EnumDeclarationSyntax enumDeclarationSyntax)
         {
             main.AppendLine($"type {enumDeclarationSyntax.Identifier.Text} int");
@@ -175,9 +225,21 @@ namespace cs2go.tools
         {
             var flg = GetStaticOrConst(methodDeclarationSyntax.Modifiers);
 
-            var returnType = CharpTypeToGolangType(methodDeclarationSyntax.ReturnType);
+            var returnType = methodDeclarationSyntax.ReturnType.ToString();
             if (returnType == VOID)
-                returnType = String.Empty;
+            {
+                  returnType = String.Empty;
+            }
+            else
+            {
+                var gotype = string.Empty;
+                if (!PrimitiveTypes.TryGetValue(returnType,out gotype))
+                {
+                    returnType = "*" + CharpTypeToGolangType(methodDeclarationSyntax.ReturnType);
+                }
+            }
+ 
+            
             if (flg)
             {
                 main.AppendLine(
@@ -204,7 +266,7 @@ namespace cs2go.tools
         {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.AppendLine(
-                $"{forStatementSyntax.ForKeyword} {GetIdentifier(forStatementSyntax.Declaration)} :{GetInitializer(forStatementSyntax.Declaration)}; {forStatementSyntax.Condition}; {forStatementSyntax.Incrementors}" +
+                $"{forStatementSyntax.ForKeyword} {GetIdentifier(forStatementSyntax.Declaration)} :{GetInitializer(forStatementSyntax.Declaration)}; {AnalyzerExpression(forStatementSyntax.Condition)}; {forStatementSyntax.Incrementors}" +
                 "{");
 
             BlockSyntax blockSyntax = (BlockSyntax) forStatementSyntax.Statement;
@@ -215,6 +277,11 @@ namespace cs2go.tools
             return stringBuilder.ToString();
         }
 
+        /// <summary>
+        /// switch 
+        /// </summary>
+        /// <param name="switchStatementSyntax"></param>
+        /// <returns></returns>
         private string AnalyzerSwitchStatement(SwitchStatementSyntax switchStatementSyntax)
         {
             StringBuilder stringBuilder = new StringBuilder();
@@ -227,6 +294,8 @@ namespace cs2go.tools
 
                 stringBuilder.AppendLine(GetStatements(sectionSyntax.Statements));
             }
+
+            stringBuilder.AppendLine("}");
 
             return stringBuilder.ToString();
         }
@@ -355,16 +424,27 @@ namespace cs2go.tools
                 {
                     return TH + "." + elementAccessExpressionSyntax;
                 }
-                /*if (GetFieldExists(elementAccessExpressionSyntax.Expression.ToString()))
-                {
-                    if (!GetFieldStatic(elementAccessExpressionSyntax.Expression.ToString()))
-                    {
-                        return TH + "." + elementAccessExpressionSyntax;
-                    }
-                }*/
             }
 
             return elementAccessExpressionSyntax.ToString();
+        }
+
+        private string  AnalyzerAssignmentExpression(AssignmentExpressionSyntax assignmentExpression)
+        {
+            string str = String.Empty;
+            str += AnalyzerExpression(assignmentExpression.Left);
+            str += $" {assignmentExpression.OperatorToken.Text} ";
+            str += AnalyzerExpression(assignmentExpression.Right);
+            return str;
+        }
+        
+        private string  AnalyzerBinaryExpression(BinaryExpressionSyntax binaryExpression)
+        {
+            string str = String.Empty;
+            str += AnalyzerExpression(binaryExpression.Left);
+            str += $" {binaryExpression.OperatorToken.Text} ";
+            str += AnalyzerExpression(binaryExpression.Right);
+            return str;
         }
 
         /// <summary>
@@ -378,7 +458,15 @@ namespace cs2go.tools
             {
                 return expressionSyntax.ToString().Replace("f", "");
             }
-
+            if (expressionSyntax is BinaryExpressionSyntax)
+            {
+               return AnalyzerBinaryExpression(expressionSyntax as BinaryExpressionSyntax);
+            }
+            if (expressionSyntax is AssignmentExpressionSyntax)
+            {
+                return AnalyzerAssignmentExpression(expressionSyntax as AssignmentExpressionSyntax);
+            }
+            
             if (expressionSyntax is MemberAccessExpressionSyntax)
             {
                 return GetMemberAccessExpression((MemberAccessExpressionSyntax) expressionSyntax);
@@ -386,54 +474,25 @@ namespace cs2go.tools
 
             if (expressionSyntax is IdentifierNameSyntax)
             {
-                return "*" + expressionSyntax;
+                return  expressionSyntax.ToString();
             }
 
             if (expressionSyntax is ElementAccessExpressionSyntax)
             {
                 return GetElementAccessExpression(expressionSyntax as ElementAccessExpressionSyntax);
             }
-
+            
             if (expressionSyntax is ArrayCreationExpressionSyntax)
             {
                 var ex = (ArrayCreationExpressionSyntax) expressionSyntax;
                 return CharpTypeToGolangType(ex.Type) + ex.Initializer;
             }
-
+            
             if (expressionSyntax is PostfixUnaryExpressionSyntax)
             {
                 return expressionSyntax.ToString();
             }
-
-            if (expressionSyntax is AssignmentExpressionSyntax)
-            {
-                AssignmentExpressionSyntax assignmentExpressionSyntax = expressionSyntax as AssignmentExpressionSyntax;
-
-                string str = String.Empty;
-                if (assignmentExpressionSyntax.Left is ElementAccessExpressionSyntax)
-                {
-                    str += GetElementAccessExpression(assignmentExpressionSyntax.Left as ElementAccessExpressionSyntax);
-                }
-                else
-                {
-                    str += assignmentExpressionSyntax.Left.ToString();
-                }
-
-                str += " = ";
-
-                if (assignmentExpressionSyntax.Right is ElementAccessExpressionSyntax)
-                {
-                    str += GetElementAccessExpression(
-                        assignmentExpressionSyntax.Right as ElementAccessExpressionSyntax);
-                }
-                else
-                {
-                    str += assignmentExpressionSyntax.Right.ToString();
-                }
-
-                return str;
-            }
-
+            
             if (expressionSyntax is InvocationExpressionSyntax)
             {
                 InvocationExpressionSyntax syntaxNode = (InvocationExpressionSyntax) expressionSyntax;
@@ -569,37 +628,11 @@ namespace cs2go.tools
         {
             if (typeSyntax is PredefinedTypeSyntax)
             {
-                var type = typeSyntax.ToString();
-                if (type == "ushort")
+                var gotype = string.Empty;
+                if (PrimitiveTypes.TryGetValue(typeSyntax.ToString(),out gotype))
                 {
-                    return "uint16";
+                    return gotype;
                 }
-
-                if (type == "short")
-                {
-                    return "int16";
-                }
-
-                if (type == "ulong")
-                {
-                    return "uint64";
-                }
-
-                if (type == "long")
-                {
-                    return "int64";
-                }
-
-                if (type == "float")
-                {
-                    return "float32";
-                }
-
-                if (type == "double")
-                {
-                    return "float64";
-                }
-
                 return typeSyntax.ToString();
             }
 
@@ -633,5 +666,7 @@ namespace cs2go.tools
 
             return typeSyntax.ToString();
         }
+
+   
     }
 }
