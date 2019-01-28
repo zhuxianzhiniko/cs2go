@@ -106,8 +106,7 @@ namespace cs2go.tools
                     }
                 }
             }
-
-            return false;
+            return true;
         }
 
         private bool GetFieldStatic(string fieldName)
@@ -125,7 +124,7 @@ namespace cs2go.tools
                 }
             }
 
-            return false;
+            return true;
         }
 
         private bool GetFieldExists(string fieldName)
@@ -143,7 +142,7 @@ namespace cs2go.tools
                 }
             }
 
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -195,7 +194,7 @@ namespace cs2go.tools
         {
             var flg = GetStatic(methodDeclarationSyntax.Modifiers);
 
-            var returnType = CharpToType(methodDeclarationSyntax.ReturnType);
+            var returnType = CharpTypeToGolangType(methodDeclarationSyntax.ReturnType);
             if (returnType == VOID)
                 returnType = String.Empty;
             if (flg)
@@ -314,7 +313,7 @@ namespace cs2go.tools
             stringBuilder.Append($"{VAR} ");
             if (localDeclarationStatementSyntax.Declaration.Type.ToString() != VAR)
             {
-                type = CharpToType(localDeclarationStatementSyntax.Declaration.Type);
+                type = CharpTypeToGolangType(localDeclarationStatementSyntax.Declaration.Type);
             }
 
 
@@ -413,7 +412,7 @@ namespace cs2go.tools
             if (expressionSyntax is ArrayCreationExpressionSyntax)
             {
                 var ex = (ArrayCreationExpressionSyntax) expressionSyntax;
-                return CharpToType(ex.Type) + ex.Initializer;
+                return CharpTypeToGolangType(ex.Type) + ex.Initializer;
             }
 
             if (expressionSyntax is PostfixUnaryExpressionSyntax)
@@ -501,7 +500,7 @@ namespace cs2go.tools
 
                 if (syntaxNode.Type is GenericNameSyntax)
                 {
-                    return CharpToType(syntaxNode.Type) + syntaxNode.Initializer;
+                    return CharpTypeToGolangType(syntaxNode.Type) + syntaxNode.Initializer;
                 }
                 else
                 {
@@ -522,7 +521,7 @@ namespace cs2go.tools
             StringBuilder parameters = new StringBuilder();
             foreach (var parameter in parameterListSyntax.Parameters)
             {
-                parameters.Append($"{parameter.Identifier.ToString()} {CharpToType(parameter.Type)},");
+                parameters.Append($"{parameter.Identifier.ToString()} {CharpTypeToGolangType(parameter.Type)},");
             }
 
             if (parameters.Length > 0)
@@ -545,7 +544,7 @@ namespace cs2go.tools
             else
             {
                 structInfo.AppendLine(
-                    $"{GetIdentifier(fieldDeclarationSyntax.Declaration)} {CharpToType(fieldDeclarationSyntax.Declaration.Type)}");
+                    $"{GetIdentifier(fieldDeclarationSyntax.Declaration)} {CharpTypeToGolangType(fieldDeclarationSyntax.Declaration.Type)}");
             }
         }
 
@@ -582,7 +581,7 @@ namespace cs2go.tools
         /// </summary>
         /// <param name="typeSyntax"></param>
         /// <returns></returns>
-        private string CharpToType(TypeSyntax typeSyntax)
+        private string CharpTypeToGolangType(TypeSyntax typeSyntax)
         {
             if (typeSyntax is PredefinedTypeSyntax)
             {
