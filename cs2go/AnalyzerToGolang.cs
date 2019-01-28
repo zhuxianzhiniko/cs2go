@@ -88,11 +88,11 @@ namespace cs2go.tools
         }
 
         /// <summary>
-        /// 通过函数名获得是否是静态
+        /// 通过函数名获得是否需要加调用指针 th,如果没找到则不需要添加(默认静态函数)
         /// </summary>
         /// <param name="methodName"></param>
         /// <returns></returns>
-        private bool GetMethodStatic(string methodName)
+        private bool GetMethodPointer(string methodName)
         {
             for (int i = 0; i < classDeclarationSyntax.Members.Count; i++)
             {
@@ -102,11 +102,12 @@ namespace cs2go.tools
                 {
                     if (((MethodDeclarationSyntax) item).Identifier.Text == methodName)
                     {
-                        return GetStatic(((MethodDeclarationSyntax) item).Modifiers);
+                        //如果是静态函数/常量，不需要加th调用
+                        return !GetStaticOrConst(((MethodDeclarationSyntax) item).Modifiers);
                     }
                 }
             }
-            return true;
+            return false;
         }
 
         private bool GetFieldStatic(string fieldName)
@@ -119,38 +120,19 @@ namespace cs2go.tools
                 {
                     if (GetIdentifier((item as FieldDeclarationSyntax).Declaration) == fieldName)
                     {
-                        return GetStatic(((FieldDeclarationSyntax) item).Modifiers);
+                        return GetStaticOrConst(((FieldDeclarationSyntax) item).Modifiers);
                     }
                 }
             }
-
-            return true;
-        }
-
-        private bool GetFieldExists(string fieldName)
-        {
-            for (int i = 0; i < classDeclarationSyntax.Members.Count; i++)
-            {
-                var item = classDeclarationSyntax.Members[i];
-
-                if (item is FieldDeclarationSyntax)
-                {
-                    if (GetIdentifier((item as FieldDeclarationSyntax).Declaration) == fieldName)
-                    {
-                        return true;
-                    }
-                }
-            }
-
             return true;
         }
 
         /// <summary>
-        /// 获得是否是静态类
+        /// 获得是否是包含静态或者常量修饰符
         /// </summary>
         /// <param name="syntaxTokenList"></param>
         /// <returns></returns>
-        private bool GetStatic(SyntaxTokenList syntaxTokenList)
+        private bool GetStaticOrConst(SyntaxTokenList syntaxTokenList)
         {
             foreach (var item in syntaxTokenList)
             {
@@ -159,7 +141,6 @@ namespace cs2go.tools
                     return true;
                 }
             }
-
             return false;
         }
 
@@ -192,7 +173,7 @@ namespace cs2go.tools
         /// <param name="methodDeclarationSyntax"></param>
         private void AnalyzerMethod(MethodDeclarationSyntax methodDeclarationSyntax)
         {
-            var flg = GetStatic(methodDeclarationSyntax.Modifiers);
+            var flg = GetStaticOrConst(methodDeclarationSyntax.Modifiers);
 
             var returnType = CharpTypeToGolangType(methodDeclarationSyntax.ReturnType);
             if (returnType == VOID)
@@ -370,13 +351,17 @@ namespace cs2go.tools
         {
             if (elementAccessExpressionSyntax.Expression is IdentifierNameSyntax)
             {
-                if (GetFieldExists(elementAccessExpressionSyntax.Expression.ToString()))
+                if (!GetFieldStatic(elementAccessExpressionSyntax.Expression.ToString()))
+                {
+                    return TH + "." + elementAccessExpressionSyntax;
+                }
+                /*if (GetFieldExists(elementAccessExpressionSyntax.Expression.ToString()))
                 {
                     if (!GetFieldStatic(elementAccessExpressionSyntax.Expression.ToString()))
                     {
                         return TH + "." + elementAccessExpressionSyntax;
                     }
-                }
+                }*/
             }
 
             return elementAccessExpressionSyntax.ToString();
@@ -455,13 +440,12 @@ namespace cs2go.tools
 
                 if (syntaxNode.Expression is IdentifierNameSyntax)
                 {
-                    bool isStatic = GetMethodStatic(syntaxNode.Expression.ToString());
-                    if (isStatic)
+                    bool isAddPointer = GetMethodPointer(syntaxNode.Expression.ToString());
+                    if (isAddPointer)
                     {
-                        return expressionSyntax.ToString();
+                        return $"{TH}." + expressionSyntax;
                     }
-
-                    return $"{TH}." + expressionSyntax;
+                    return expressionSyntax.ToString();
                 }
 
                 if (syntaxNode.Expression is MemberAccessExpressionSyntax)
@@ -535,7 +519,7 @@ namespace cs2go.tools
         /// <param name="fieldDeclarationSyntax"></param>
         private void AnalyzerField(FieldDeclarationSyntax fieldDeclarationSyntax)
         {
-            var flg = GetStatic(fieldDeclarationSyntax.Modifiers);
+            var flg = GetStaticOrConst(fieldDeclarationSyntax.Modifiers);
             if (flg)
             {
                 main.AppendLine(
