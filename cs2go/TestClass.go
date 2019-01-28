@@ -11,6 +11,7 @@ func (th *TestClass) Show() {
 
 }
 func (th *TestClass) GetHurt(list []int, testClass TestClass, callNum int) int {
+	th.dic[100] = "dd"
 	return 0
 
 }

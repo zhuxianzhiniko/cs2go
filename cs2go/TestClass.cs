@@ -42,7 +42,7 @@ public class TestClass
         d1.RemoveAt(0);
         d1.Add(100);
         d1.Clear();*/
-      
+      dic[100] = "dd";
       
         /*int num1 = 100;
         var ex = 100 + 2 - 10 * 100 / 2;

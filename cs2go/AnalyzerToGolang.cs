@@ -90,7 +90,7 @@ namespace cs2go.tools
         /// </summary>
         /// <param name="methodName"></param>
         /// <returns></returns>
-        private bool GetStatic(string methodName)
+        private bool GetMethodStatic(string methodName)
         {
             for (int i = 0; i < classDeclarationSyntax.Members.Count; i++)
             {
@@ -101,6 +101,24 @@ namespace cs2go.tools
                     if (((MethodDeclarationSyntax) item).Identifier.Text == methodName)
                     {
                         return GetStatic(((MethodDeclarationSyntax) item).Modifiers);
+                    }
+                }
+            }
+
+            return false;
+        }
+        
+        private bool GetFieldStatic(string fieldName)
+        {
+            for (int i = 0; i < classDeclarationSyntax.Members.Count; i++)
+            {
+                var item = classDeclarationSyntax.Members[i];
+
+                if (item is FieldDeclarationSyntax)
+                {
+                    if (GetIdentifier((item as FieldDeclarationSyntax).Declaration) == fieldName)
+                    {
+                        return GetStatic(((FieldDeclarationSyntax) item).Modifiers);
                     }
                 }
             }
@@ -354,6 +372,22 @@ namespace cs2go.tools
 
             if (expressionSyntax is AssignmentExpressionSyntax)
             {
+                AssignmentExpressionSyntax assignmentExpressionSyntax = expressionSyntax as AssignmentExpressionSyntax;
+                if (assignmentExpressionSyntax.Left is ElementAccessExpressionSyntax)
+                {
+                    ElementAccessExpressionSyntax leftSyntax = assignmentExpressionSyntax.Left as ElementAccessExpressionSyntax;
+                    if (leftSyntax.Expression is IdentifierNameSyntax)
+                    {
+                        if (!GetFieldStatic(leftSyntax.Expression.ToString()))
+                        {
+                            return TH + "." + expressionSyntax;
+                        }
+                        else
+                        {
+                            return expressionSyntax.ToString();   
+                        }
+                    }
+                }
                 return expressionSyntax.ToString();
             }
 
@@ -363,7 +397,7 @@ namespace cs2go.tools
 
                 if (syntaxNode.Expression is IdentifierNameSyntax)
                 {
-                    bool isStatic = GetStatic(syntaxNode.Expression.ToString());
+                    bool isStatic = GetMethodStatic(syntaxNode.Expression.ToString());
                     if (isStatic)
                     {
                         return expressionSyntax.ToString();
@@ -504,7 +538,6 @@ namespace cs2go.tools
                 }
                 if (genericSyntax.Identifier.Text.IndexOf(LIST, StringComparison.Ordinal)!=-1)
                 {
-                       
                     var typeArgumen = genericSyntax.TypeArgumentList.ToString();
                     return "[]" + typeArgumen.Replace("<", "").Replace(">", "");
                 }
