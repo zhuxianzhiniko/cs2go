@@ -27,12 +27,13 @@ namespace cs2go.tools
         public const string LENGHT = "Length";
         public const string TH = "th";
 
+        public const string DICTIONARY = "Dictionary";
+        public const string LIST = "List";
+
 
         //API
-
         public const string REMOVEAT = "RemoveAt";
         public const string ADD = "Add";
-
         public const string CLEAR = "Clear";
         public void AnalyzerStart(string code)
         {
@@ -493,8 +494,21 @@ namespace cs2go.tools
 
             if (typeSyntax is GenericNameSyntax)
             {
-                var typeArgumen = (typeSyntax as GenericNameSyntax).TypeArgumentList.ToString();
-                return "[]" + typeArgumen.Replace("<", "").Replace(">", "");
+                var genericSyntax = typeSyntax as GenericNameSyntax;
+
+                if (genericSyntax.Identifier.Text == DICTIONARY)
+                {
+                    var key = genericSyntax.TypeArgumentList.Arguments[0];
+                    var value = genericSyntax.TypeArgumentList.Arguments[1];
+                    return $"map[{key}]{value}";
+                }
+                if (genericSyntax.Identifier.Text.IndexOf(LIST, StringComparison.Ordinal)!=-1)
+                {
+                       
+                    var typeArgumen = genericSyntax.TypeArgumentList.ToString();
+                    return "[]" + typeArgumen.Replace("<", "").Replace(">", "");
+                }
+             
             }
 
             if (typeSyntax is ArrayTypeSyntax)

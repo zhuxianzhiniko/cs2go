@@ -11,13 +11,11 @@ func (th *TestClass) Show() {
 
 }
 func (th *TestClass) GetHurt(list []int, testClass TestClass, callNum int) int {
-	var d1 = []int{1, 2, 3, 4}
-	d1 = append(d1[:0], d1[0+1:]...)
-	d1 = append(d1, 100)
-	d1 = d1[:0:0]
-	return cap(d1)
+	return 0
 
 }
 
 type TestClass struct {
+	dic  map[int]string
+	list []int
 }
