@@ -10,13 +10,14 @@ const (
 func (th *TestClass) Show() {
 
 }
-func (th *TestClass) GetHurt(list []int, testClass TestClass, callNum int) int {
-	th.dic[100] = "dd"
+func (th *TestClass) GetHurt(list []string, testClass TestClass, callNum int) int {
+	var testdouble float64 = 0
 	return 0
 
 }
 
 type TestClass struct {
-	dic  map[int]string
-	list []int
+	dic   map[int]string
+	lists []int
+	d     float64
 }

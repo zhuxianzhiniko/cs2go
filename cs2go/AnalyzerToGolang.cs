@@ -26,6 +26,7 @@ namespace cs2go.tools
         public const string COUNT = "Count";
         public const string LENGHT = "Length";
         public const string TH = "th";
+        public const string VAR = "var";
 
         public const string DICTIONARY = "Dictionary";
         public const string LIST = "List";
@@ -35,6 +36,7 @@ namespace cs2go.tools
         public const string REMOVEAT = "RemoveAt";
         public const string ADD = "Add";
         public const string CLEAR = "Clear";
+
         public void AnalyzerStart(string code)
         {
             var roslynTree = CSharpSyntaxTree.ParseText(code);
@@ -107,7 +109,7 @@ namespace cs2go.tools
 
             return false;
         }
-        
+
         private bool GetFieldStatic(string fieldName)
         {
             for (int i = 0; i < classDeclarationSyntax.Members.Count; i++)
@@ -119,6 +121,24 @@ namespace cs2go.tools
                     if (GetIdentifier((item as FieldDeclarationSyntax).Declaration) == fieldName)
                     {
                         return GetStatic(((FieldDeclarationSyntax) item).Modifiers);
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private bool GetFieldExists(string fieldName)
+        {
+            for (int i = 0; i < classDeclarationSyntax.Members.Count; i++)
+            {
+                var item = classDeclarationSyntax.Members[i];
+
+                if (item is FieldDeclarationSyntax)
+                {
+                    if (GetIdentifier((item as FieldDeclarationSyntax).Declaration) == fieldName)
+                    {
+                        return true;
                     }
                 }
             }
@@ -290,11 +310,18 @@ namespace cs2go.tools
         {
             StringBuilder stringBuilder = new StringBuilder();
 
-            stringBuilder.Append("var ");
+            string type = String.Empty;
+            stringBuilder.Append($"{VAR} ");
+            if (localDeclarationStatementSyntax.Declaration.Type.ToString() != VAR)
+            {
+                type = CharpToType(localDeclarationStatementSyntax.Declaration.Type);
+            }
+
+
             foreach (var variable in localDeclarationStatementSyntax.Declaration.Variables)
             {
                 stringBuilder.Append(
-                    $"{variable.Identifier.ToString()} {variable.Initializer.EqualsToken.ToString()} {AnalyzerExpression(variable.Initializer.Value)}");
+                    $"{variable.Identifier.ToString()} {type} {variable.Initializer.EqualsToken.ToString()} {AnalyzerExpression(variable.Initializer.Value)}");
             }
 
             return stringBuilder.ToString();
@@ -312,6 +339,11 @@ namespace cs2go.tools
         }
 
 
+        /// <summary>
+        /// API 转译
+        /// </summary>
+        /// <param name="memberAccessExpressionSyntax"></param>
+        /// <returns></returns>
         private string GetMemberAccessExpression(MemberAccessExpressionSyntax memberAccessExpressionSyntax)
         {
             if (memberAccessExpressionSyntax.Name.ToString() == COUNT)
@@ -333,6 +365,25 @@ namespace cs2go.tools
         }
 
         /// <summary>
+        /// 静态，动态表达式判断
+        /// </summary>
+        public string GetElementAccessExpression(ElementAccessExpressionSyntax elementAccessExpressionSyntax)
+        {
+            if (elementAccessExpressionSyntax.Expression is IdentifierNameSyntax)
+            {
+                if (GetFieldExists(elementAccessExpressionSyntax.Expression.ToString()))
+                {
+                    if (!GetFieldStatic(elementAccessExpressionSyntax.Expression.ToString()))
+                    {
+                        return TH + "." + elementAccessExpressionSyntax;
+                    }
+                }
+            }
+
+            return elementAccessExpressionSyntax.ToString();
+        }
+
+        /// <summary>
         ///  表达式解析
         /// </summary>
         /// <param name="expressionSyntax"></param>
@@ -341,12 +392,12 @@ namespace cs2go.tools
         {
             if (expressionSyntax is LiteralExpressionSyntax)
             {
-                return expressionSyntax.ToString();
+                return expressionSyntax.ToString().Replace("f", "");
             }
 
             if (expressionSyntax is MemberAccessExpressionSyntax)
             {
-                return GetMemberAccessExpression((MemberAccessExpressionSyntax)expressionSyntax);
+                return GetMemberAccessExpression((MemberAccessExpressionSyntax) expressionSyntax);
             }
 
             if (expressionSyntax is IdentifierNameSyntax)
@@ -356,7 +407,7 @@ namespace cs2go.tools
 
             if (expressionSyntax is ElementAccessExpressionSyntax)
             {
-                return expressionSyntax.ToString();
+                return GetElementAccessExpression(expressionSyntax as ElementAccessExpressionSyntax);
             }
 
             if (expressionSyntax is ArrayCreationExpressionSyntax)
@@ -373,22 +424,30 @@ namespace cs2go.tools
             if (expressionSyntax is AssignmentExpressionSyntax)
             {
                 AssignmentExpressionSyntax assignmentExpressionSyntax = expressionSyntax as AssignmentExpressionSyntax;
+
+                string str = String.Empty;
                 if (assignmentExpressionSyntax.Left is ElementAccessExpressionSyntax)
                 {
-                    ElementAccessExpressionSyntax leftSyntax = assignmentExpressionSyntax.Left as ElementAccessExpressionSyntax;
-                    if (leftSyntax.Expression is IdentifierNameSyntax)
-                    {
-                        if (!GetFieldStatic(leftSyntax.Expression.ToString()))
-                        {
-                            return TH + "." + expressionSyntax;
-                        }
-                        else
-                        {
-                            return expressionSyntax.ToString();   
-                        }
-                    }
+                    str += GetElementAccessExpression(assignmentExpressionSyntax.Left as ElementAccessExpressionSyntax);
                 }
-                return expressionSyntax.ToString();
+                else
+                {
+                    str += assignmentExpressionSyntax.Left.ToString();
+                }
+
+                str += " = ";
+
+                if (assignmentExpressionSyntax.Right is ElementAccessExpressionSyntax)
+                {
+                    str += GetElementAccessExpression(
+                        assignmentExpressionSyntax.Right as ElementAccessExpressionSyntax);
+                }
+                else
+                {
+                    str += assignmentExpressionSyntax.Right.ToString();
+                }
+
+                return str;
             }
 
             if (expressionSyntax is InvocationExpressionSyntax)
@@ -405,26 +464,35 @@ namespace cs2go.tools
 
                     return $"{TH}." + expressionSyntax;
                 }
+
                 if (syntaxNode.Expression is MemberAccessExpressionSyntax)
                 {
-                    MemberAccessExpressionSyntax ex =(MemberAccessExpressionSyntax)syntaxNode.Expression;
+                    MemberAccessExpressionSyntax ex = (MemberAccessExpressionSyntax) syntaxNode.Expression;
                     if (ex.Name.ToString() == REMOVEAT)
                     {
                         var str = syntaxNode.ArgumentList.ToString().Replace("(", "").Replace(")", "");
                         return $"{ex.Expression} = append({ex.Expression}[:{str}], {ex.Expression}[{str}+1:]...)";
                     }
+
                     if (ex.Name.ToString() == ADD)
                     {
                         var str = syntaxNode.ArgumentList.ToString().Replace("(", "").Replace(")", "");
                         return $"{ex.Expression} = append({ex.Expression}, {str})";
                     }
-                    
+
                     if (ex.Name.ToString() == CLEAR)
                     {
                         return $"{ex.Expression} = {ex.Expression}[:0:0]";
                     }
+                    else
+                    {
+                        return syntaxNode.ToString();
+                    }
                 }
-                return String.Empty;
+                else
+                {
+                    return syntaxNode.ToString();
+                }
             }
 
             if (expressionSyntax is ObjectCreationExpressionSyntax)
@@ -518,6 +586,37 @@ namespace cs2go.tools
         {
             if (typeSyntax is PredefinedTypeSyntax)
             {
+                var type = typeSyntax.ToString();
+                if (type == "ushort")
+                {
+                    return "uint16";
+                }
+
+                if (type == "short")
+                {
+                    return "int16";
+                }
+
+                if (type == "ulong")
+                {
+                    return "uint64";
+                }
+
+                if (type == "long")
+                {
+                    return "int64";
+                }
+
+                if (type == "float")
+                {
+                    return "float32";
+                }
+
+                if (type == "double")
+                {
+                    return "float64";
+                }
+
                 return typeSyntax.ToString();
             }
 
@@ -536,12 +635,12 @@ namespace cs2go.tools
                     var value = genericSyntax.TypeArgumentList.Arguments[1];
                     return $"map[{key}]{value}";
                 }
-                if (genericSyntax.Identifier.Text.IndexOf(LIST, StringComparison.Ordinal)!=-1)
+
+                if (genericSyntax.Identifier.Text.IndexOf(LIST, StringComparison.Ordinal) != -1)
                 {
                     var typeArgumen = genericSyntax.TypeArgumentList.ToString();
                     return "[]" + typeArgumen.Replace("<", "").Replace(">", "");
                 }
-             
             }
 
             if (typeSyntax is ArrayTypeSyntax)

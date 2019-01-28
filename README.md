@@ -7,16 +7,10 @@
 ## 语法支持
 
 **已支持的语法**
-* 基本的所有语法 比如 int num = 100 , func(100), staticFun() 
-* 常规的运算符  int num = 100 - 10 * 5 + 4 / 10
-* for
-* switch
-* Csharp类结构/类的实例化(new)
-* 字典/数组的声明
-* 静态函数/类函数
-* const
-* enum
-* 局部变量var 
+* 基本的语法和运算符 参考已测试[例子](https://github.com/zhuxianzhiniko/cs2go/blob/master/cs2go/TestClass.cs) 
+* 支持的数据类型 bool,数字类型(包括int,long,short,以及有符号和无符号),string,float,double,class,enum,Dictionary,List
+* 支持的控制结构 for,switch
+* 支持的修饰符 const,readonly,static
 
 **已转译的Csharp API**
 
@@ -28,9 +22,10 @@
 
 
 
-**因为go的语言特性而限制的Csharp语法/API**
+**因为go的语言特性而限制的Csharp语法**
 
 * go的 [关键字](https://github.com/Unknwon/the-way-to-go_ZH_CN/blob/master/eBook/04.1.md) 不能为变量名,函数名，类名等;比如：int go = 100;
+* 局部变量不要和全局变量名或当前类成员一致 (区分大小写)
 * CSharp 继承，一般泛型（数组/字典 泛型除外），Task,async,LINQ,out,delegate等独有特性; 比如：async Task Show<T>(T num)
 * 三元运算符
 * ?.运算符
