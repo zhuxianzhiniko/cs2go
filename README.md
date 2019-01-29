@@ -8,8 +8,8 @@
 
 **已支持的语法**
 * 基本的语法和运算符 参考已测试[例子](https://github.com/zhuxianzhiniko/cs2go/blob/master/cs2go/TestClass.cs) 
-* 支持的数据类型 bool,数字类型(包括int,long,short,以及有符号和无符号),string,float,double,class,enum,Dictionary,List
-* 支持的控制结构 for,switch
+* 支持的数据类型 int,long,short,(包括有符号和无符号),bool,string,float,double,class,enum,Dictionary,List
+* 支持的控制结构 for,switch,if
 * 支持的修饰符 const,readonly,static
 
 **已转译的Csharp API**
