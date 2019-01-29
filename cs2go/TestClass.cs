@@ -53,9 +53,9 @@ public class TestClass
         long testUlong = 0;
         float testFloat = 0f;
         double testdouble = 0f;
-        string str = "sss";
-        bool flg = false;
-       MyTestEnum myTestEnum = MyTestEnum.One;
+        string Teststring = "sss";
+        bool Testbool = false;
+        MyTestEnum myTestEnum = MyTestEnum.One;
         
         int[] TestArray = new int[] {1, 2};
         List<int> TestList = new List<int> {1, 2, 3, 4};
