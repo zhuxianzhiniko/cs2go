@@ -332,48 +332,87 @@ namespace cs2go.tools
             StringBuilder stringBuilder = new StringBuilder();
             foreach (var item in syntaxList)
             {
-                if (item is ReturnStatementSyntax)
-                {
-                    stringBuilder.AppendLine(AnalyzerReturnStatement((ReturnStatementSyntax) item));
-                }
-                else if (item is LocalDeclarationStatementSyntax)
-                {
-                    stringBuilder.AppendLine(AnalyzerLocalDeclarationStatement((LocalDeclarationStatementSyntax) item));
-                }
-                else if (item is ExpressionStatementSyntax)
-                {
-                    stringBuilder.AppendLine(AnalyzerExpressionStatement((ExpressionStatementSyntax) item));
-                }
-                else if (item is ForStatementSyntax)
-                {
-                    stringBuilder.AppendLine(AnalyzerForStatement((ForStatementSyntax) item));
-                }
-                else if (item is SwitchStatementSyntax)
-                {
-                    stringBuilder.AppendLine(AnalyzerSwitchStatement((SwitchStatementSyntax) item));
-                }
-                else if (item is BreakStatementSyntax)
-                {
-                    stringBuilder.AppendLine(item.ToString().Replace(";", ""));
-                }
-                else if (item is IfStatementSyntax)
-                {
-                    stringBuilder.AppendLine(AnalyzerIfStatement((IfStatementSyntax)item));
-                }
+                stringBuilder.AppendLine(GetStatement(item));
             }
-
             return stringBuilder.ToString();
         }
 
+        /// <summary>
+        /// 单一个Statement
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        private string GetStatement(StatementSyntax item)
+        {
+            if (item is ReturnStatementSyntax)
+            {
+                return AnalyzerReturnStatement((ReturnStatementSyntax) item);
+            }
+            else if (item is LocalDeclarationStatementSyntax)
+            {
+                return AnalyzerLocalDeclarationStatement((LocalDeclarationStatementSyntax) item);
+            }
+            else if (item is ExpressionStatementSyntax)
+            {
+                return AnalyzerExpressionStatement((ExpressionStatementSyntax) item);
+            }
+            else if (item is ForStatementSyntax)
+            {
+                return AnalyzerForStatement((ForStatementSyntax) item);
+            }
+            else if (item is SwitchStatementSyntax)
+            {
+                return AnalyzerSwitchStatement((SwitchStatementSyntax) item);
+            }
+            else if (item is BreakStatementSyntax)
+            {
+                return item.ToString().Replace(";", "");
+            }
+            else if (item is IfStatementSyntax)
+            {
+                return AnalyzerIfStatement((IfStatementSyntax)item);
+            }
+            else if (item is BlockSyntax)
+            {
+                return GetStatements(((BlockSyntax)item).Statements);
+            }
+            return String.Empty;
+        }
+
+        /// <summary>
+        /// if 解析
+        /// </summary>
+        /// <param name="ifStatementSyntax"></param>
+        /// <returns></returns>
         private string AnalyzerIfStatement(IfStatementSyntax ifStatementSyntax)
         {
            StringBuilder stringBuilder = new StringBuilder();
 
            stringBuilder.AppendLine($"{ifStatementSyntax.IfKeyword} {AnalyzerExpression(ifStatementSyntax.Condition)} "+"{");
-           var block = ifStatementSyntax.Statement as BlockSyntax;
-           stringBuilder.AppendLine(GetStatements(block.Statements));
-           stringBuilder.AppendLine("}");
+           stringBuilder.AppendLine(GetStatement(ifStatementSyntax.Statement));
+           stringBuilder.AppendLine("}"+(AnalyzerelseClause(ifStatementSyntax.Else)));
            return stringBuilder.ToString();
+        }
+        /// <summary>
+        /// else 解析
+        /// </summary>
+        /// <param name="elseClauseSyntax"></param>
+        /// <returns></returns>
+        private string AnalyzerelseClause(ElseClauseSyntax elseClauseSyntax)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            if (elseClauseSyntax.Statement is BlockSyntax) //因为{问题，在没有下一个else if 的特殊处理
+            {
+                stringBuilder.AppendLine($"{elseClauseSyntax.ElseKeyword}"+"{");
+                stringBuilder.AppendLine(GetStatement(elseClauseSyntax.Statement));
+            }
+            else
+            {
+                stringBuilder.Append($"{elseClauseSyntax.ElseKeyword}  "); 
+                stringBuilder.AppendLine(GetStatement(elseClauseSyntax.Statement));
+                stringBuilder.AppendLine("}");
+            }
+            return stringBuilder.ToString();
         }
 
         /// <summary>

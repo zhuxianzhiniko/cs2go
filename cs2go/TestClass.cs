@@ -100,6 +100,14 @@ public class TestClass
         {
             dic[100] = "dd";
         }
+        else if(myTestEnum == MyTestEnum.Tow)
+        {
+            dic[100] = "dd1";
+        }
+        else
+        {
+            dic[100] = "dd2";
+        }
 
         //switch表达式
         switch (testClass.GetMaxAttack(100))
@@ -120,6 +128,18 @@ public class TestClass
                             case 1:
                                 break;
                             case 2:
+                                if (myTestEnum == MyTestEnum.One ||  testClass.dic[100]!="test" && myTestEnum == MyTestEnum.Tow)
+                                {
+                                    dic[100] = "dd";
+                                }
+                                else if(myTestEnum == MyTestEnum.Tow)
+                                {
+                                    dic[100] = "dd1";
+                                }
+                                else
+                                {
+                                    dic[100] = "dd2";
+                                }
                                 break;
                         }
                     }

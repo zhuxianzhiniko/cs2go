@@ -59,6 +59,12 @@ func (th *TestClass) GetHurt(list []string, testClass TestClass, callNum int) in
 	if th.myTestEnum == One || testClass.dic[100] != "test" && th.myTestEnum == Tow {
 		th.dic[100] = "dd"
 
+	} else if th.myTestEnum == Tow {
+		th.dic[100] = "dd1"
+
+	} else {
+		th.dic[100] = "dd2"
+
 	}
 
 	switch testClass.GetMaxAttack {
@@ -72,6 +78,17 @@ func (th *TestClass) GetHurt(list []string, testClass TestClass, callNum int) in
 					break
 
 				case 2:
+					if th.myTestEnum == One || testClass.dic[100] != "test" && th.myTestEnum == Tow {
+						th.dic[100] = "dd"
+
+					} else if th.myTestEnum == Tow {
+						th.dic[100] = "dd1"
+
+					} else {
+						th.dic[100] = "dd2"
+
+					}
+
 					break
 
 				}
