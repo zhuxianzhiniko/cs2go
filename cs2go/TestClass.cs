@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 public class TestClass
 {
     //Enum测试
     public enum MyTestEnum
     {
-        One1,
-        Tow1
+        One,
+        Tow
     }
-
+  
     //数组字典测试
     public Dictionary<int, string> dic;
     public List<int> lists;
@@ -20,10 +21,11 @@ public class TestClass
     public static string Name = "MyName";
     public readonly bool OnlyFlg = false;
 
-
+    //类成员测试
     public int Attack;
     public int Defense;
     public bool Flg;
+    public MyTestEnum myTestEnum;
 
 
     //实例化返回测试    
@@ -39,6 +41,8 @@ public class TestClass
     //主要是函数过程测试
     public int GetHurt(List<string> list, TestClass testClass, int callNum)
     {
+      
+        
         //变量声明语法
         var testVar = 0;
         int TestInt = 0;
@@ -50,9 +54,14 @@ public class TestClass
         float testFloat = 0f;
         double testdouble = 0f;
         string str = "sss";
+        bool flg = false;
+       MyTestEnum myTestEnum = MyTestEnum.One;
+        
         int[] TestArray = new int[] {1, 2};
         List<int> TestList = new List<int> {1, 2, 3, 4};
+        List<string> TestList1 = new List<string> {"false","false"};
 
+        
         //API 转译
         var listLen = TestList.Count;
         var arrLen = TestArray.Length;
@@ -84,6 +93,12 @@ public class TestClass
         for (int i = 10; i < testClass.lists.Count; i++)
         {
             i++;
+        }
+        
+        //if表达式
+        if (myTestEnum == MyTestEnum.One ||  testClass.dic[100]!="test" && myTestEnum == MyTestEnum.Tow)
+        {
+            dic[100] = "dd";
         }
 
         //switch表达式
@@ -129,7 +144,7 @@ public class TestClass
         }
 
         //返回值
-        return testClass.lists.Count;
+        return 0;
     }
 
     //类函数测试 1
