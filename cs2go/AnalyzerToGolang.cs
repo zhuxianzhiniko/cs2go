@@ -69,6 +69,8 @@ namespace cs2go.tools
         public const string BOOL = "bool";
 
         public string DefaultPackageName = "package main";
+
+        private List<string> _classNameList;
     
         /// <summary>
         /// 基元类型字典  key为CSharp类型，value对应go的类型
@@ -94,20 +96,16 @@ namespace cs2go.tools
 
 
       
-
-
-        public void AnalyzerStart(string code,string fileName)
+        public string AnalyzerStart(CompilationUnitSyntax  syntax,List<string> classNameList)
         {
-            var roslynTree = CSharpSyntaxTree.ParseText(code);
-            var syntax = (CompilationUnitSyntax) roslynTree.GetRoot();
+            _classNameList = classNameList;
             main.AppendLine(DefaultPackageName); 
             AnalyzerMemberDeclaration(syntax.Members);
             main.AppendLine(structInfo.ToString());
             Console.WriteLine(main);
-            var path = Environment.CurrentDirectory + $"\\{fileName}.go";
-            SaveGoFile(main.ToString(), path);
+            return main.ToString();
         }
-        
+  
         private void AnalyzerMemberDeclaration(SyntaxList<MemberDeclarationSyntax> memberDeclarationSyntaxs)
         {
             foreach (var member in memberDeclarationSyntaxs)
@@ -166,18 +164,6 @@ namespace cs2go.tools
                 }
             }
             main.AppendLine(BracesE);
-        }
-        private void SaveGoFile(string str, string path)
-        {
-            var bytes = Encoding.UTF8.GetBytes(str);
-            File.WriteAllBytes(path, bytes);
-            var info = new ProcessStartInfo();
-            info.FileName = "gofmt.exe";
-            info.WindowStyle = ProcessWindowStyle.Hidden;
-            info.UseShellExecute = true;
-            info.ErrorDialog = true;
-            info.Arguments = "-w " + Environment.CurrentDirectory;
-            Process.Start(info)?.WaitForExit();
         }
 
         /// <summary>
@@ -390,31 +376,38 @@ namespace cs2go.tools
             {
                 return AnalyzerReturnStatement((ReturnStatementSyntax) item);
             }
-            else if (item is LocalDeclarationStatementSyntax)
+
+            if (item is LocalDeclarationStatementSyntax)
             {
                 return AnalyzerLocalDeclarationStatement((LocalDeclarationStatementSyntax) item);
             }
-            else if (item is ExpressionStatementSyntax)
+
+            if (item is ExpressionStatementSyntax)
             {
                 return AnalyzerExpressionStatement((ExpressionStatementSyntax) item);
             }
-            else if (item is ForStatementSyntax)
+
+            if (item is ForStatementSyntax)
             {
                 return AnalyzerForStatement((ForStatementSyntax) item);
             }
-            else if (item is SwitchStatementSyntax)
+
+            if (item is SwitchStatementSyntax)
             {
                 return AnalyzerSwitchStatement((SwitchStatementSyntax) item);
             }
-            else if (item is BreakStatementSyntax)
+
+            if (item is BreakStatementSyntax)
             {
                 return item.ToString().Replace(";", "");
             }
-            else if (item is IfStatementSyntax)
+
+            if (item is IfStatementSyntax)
             {
                 return AnalyzerIfStatement((IfStatementSyntax)item);
             }
-            else if (item is BlockSyntax)
+
+            if (item is BlockSyntax)
             {
                 return GetStatements(((BlockSyntax)item).Statements);
             }
@@ -458,7 +451,7 @@ namespace cs2go.tools
         }
 
         /// <summary>
-        /// 函数内 语法
+        /// 函数过程 语法
         /// </summary>
         /// <param name="expressionStatementSyntax"></param>
         /// <returns></returns>
@@ -643,6 +636,7 @@ namespace cs2go.tools
 
                 if (syntaxNode.Expression is IdentifierNameSyntax)
                 {
+                    var identifier =((IdentifierNameSyntax) syntaxNode.Expression).Identifier;
                     bool isAddPointer = GetMethodPointer(syntaxNode.Expression.ToString());
                     if (isAddPointer)
                     {
@@ -654,9 +648,14 @@ namespace cs2go.tools
                 if (syntaxNode.Expression is MemberAccessExpressionSyntax)
                 {
                     var expStr = GetMemberAccessExpression(syntaxNode.Expression as MemberAccessExpressionSyntax);
-                    
                     if (string.IsNullOrEmpty(expStr))
                     {
+                        IdentifierNameSyntax identifier =(IdentifierNameSyntax)((MemberAccessExpressionSyntax)syntaxNode.Expression).Expression;
+
+                        if (_classNameList.IndexOf(identifier.ToString()) != -1)
+                        {
+                            return syntaxNode.ToString().Replace($"{identifier.ToString()}.","");
+                        }
                         return syntaxNode.ToString();
                     }
                     return expStr;

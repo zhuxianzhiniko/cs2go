@@ -79,6 +79,9 @@ namespace cs2go
             GetMaxAttack(100);
             testClass.Show();
 
+            //调用其他类的静态函数
+            TestClass1.TestSTATICshow();
+            
             //实例化类测试
             var test = new TestClass();
 

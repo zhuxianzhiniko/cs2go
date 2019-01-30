@@ -9,6 +9,9 @@ type TestInterface interface {
 func (th *TestClass1) Show() {
 
 }
+func TestSTATICshow() {
+
+}
 func (th *TestClass2) Show() {
 
 }
@@ -17,5 +20,5 @@ type TestClass1 struct {
 	num int
 }
 type TestClass2 struct {
-	num intg
+	num int
 }

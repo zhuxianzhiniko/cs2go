@@ -17,6 +17,11 @@ namespace cs2go
         {
             
         }
+
+        public static void TestSTATICshow()
+        {
+            
+        }
     }
     public class TestClass2
     {
