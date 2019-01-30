@@ -31,6 +31,9 @@ namespace cs2go.tools
         public const string LENGHT = "Length";
         public const string TH = "th";
         public const string VAR = "var";
+        public const string BracesS ="{";
+        public const string BracesE ="}";
+
         
         public const string  FALSE = "false";
 
@@ -61,6 +64,8 @@ namespace cs2go.tools
         public const string STRING = "string";
 
         public const string BOOL = "bool";
+
+        public string DefaultPackageName = "package main";
     
         /// <summary>
         /// 基元类型字典  key为CSharp类型，value对应go的类型
@@ -103,10 +108,14 @@ namespace cs2go.tools
                 {
                     AnalyzerMemberDeclaration(((NamespaceDeclarationSyntax) member).Members);
                 }
+                if (member is InterfaceDeclarationSyntax)
+                {
+                    AnalyzerInterfaceDeclaration((InterfaceDeclarationSyntax) member);
+                }
                 if (member is ClassDeclarationSyntax)
                 {
                     classDeclarationSyntax = (ClassDeclarationSyntax) member;
-                    main.AppendLine("package main");
+                    main.AppendLine(DefaultPackageName);
                     structInfo.AppendLine($"type {classDeclarationSyntax.Identifier.ToString()} struct " + "{");
 
                     for (int i = 0; i < classDeclarationSyntax.Members.Count; i++)
@@ -135,6 +144,32 @@ namespace cs2go.tools
                     SaveGoFile(main.ToString(), path);
                 }
             }
+        }
+
+        private void AnalyzerInterfaceDeclaration(InterfaceDeclarationSyntax interfaceDeclarationSyntax)
+        {
+            main.AppendLine(DefaultPackageName); 
+            main.AppendLine($"type {interfaceDeclarationSyntax.Identifier.ToString()} {interfaceDeclarationSyntax.Keyword} {BracesS}");
+
+            foreach (var member in interfaceDeclarationSyntax.Members)
+            {
+                if (member is MethodDeclarationSyntax)
+                {
+                    MethodDeclarationSyntax methodDeclarationSyntax = member as MethodDeclarationSyntax;
+                    var returnType = methodDeclarationSyntax.ReturnType.ToString();
+                    if (returnType == VOID)
+                    {
+                        returnType = String.Empty;
+                    }
+                    main.AppendLine(
+                        $"{methodDeclarationSyntax.Identifier.Text} ({AnalyzerParameterList(methodDeclarationSyntax.ParameterList)}) {returnType}");
+                }
+            }
+            structInfo.AppendLine("}");
+            main.AppendLine(structInfo.ToString());
+            Console.WriteLine(main);
+            var path = Environment.CurrentDirectory + $"\\{interfaceDeclarationSyntax.Identifier.ToString()}.go";
+            SaveGoFile(main.ToString(), path);
         }
         private void SaveGoFile(string str, string path)
         {
