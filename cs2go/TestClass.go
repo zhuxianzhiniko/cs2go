@@ -28,8 +28,8 @@ func (th *TestClass) GetHurt(list []string, testClass TestClass, callNum int) in
 	var testUlong int64 = 0
 	var testFloat float32 = 0
 	var testdouble float64 = 0
-	var str string = "sss"
-	var flg bool = false
+	var Teststring string = "sss"
+	var Testbool bool = false
 	var myTestEnum MyTestEnum = One
 	var TestArray []int = []int{1, 2}
 	var TestList []int = []int{1, 2, 3, 4}

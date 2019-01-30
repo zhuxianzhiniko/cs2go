@@ -67,7 +67,7 @@ namespace cs2go.tools
         /// </summary>
         public Dictionary<string,string> PrimitiveTypes = new Dictionary<string, string>()
         {
-            {INT,"int"},
+            {INT,INT},
             {UINT,"uint32"},
 
             
@@ -80,48 +80,62 @@ namespace cs2go.tools
             {FLOAT,"float32"},
             {DOUBLE,"float64"},
             
-            {STRING,"string"},
-            {BOOL,"bool"},
+            {STRING,STRING},
+            {BOOL,BOOL},
         };
+
+
+      
 
 
         public void AnalyzerStart(string code)
         {
             var roslynTree = CSharpSyntaxTree.ParseText(code);
-
             var syntax = (CompilationUnitSyntax) roslynTree.GetRoot();
-
-
-            classDeclarationSyntax = (ClassDeclarationSyntax) syntax.Members[0];
-            main.AppendLine("package main");
-            structInfo.AppendLine($"type {classDeclarationSyntax.Identifier.ToString()} struct " + "{");
-
-            for (int i = 0; i < classDeclarationSyntax.Members.Count; i++)
+            AnalyzerMemberDeclaration(syntax.Members);
+        }
+        
+        private void AnalyzerMemberDeclaration(SyntaxList<MemberDeclarationSyntax> memberDeclarationSyntaxs)
+        {
+            foreach (var member in memberDeclarationSyntaxs)
             {
-                var item = classDeclarationSyntax.Members[i];
+                if (member is NamespaceDeclarationSyntax)
+                {
+                    AnalyzerMemberDeclaration(((NamespaceDeclarationSyntax) member).Members);
+                }
+                if (member is ClassDeclarationSyntax)
+                {
+                    classDeclarationSyntax = (ClassDeclarationSyntax) member;
+                    main.AppendLine("package main");
+                    structInfo.AppendLine($"type {classDeclarationSyntax.Identifier.ToString()} struct " + "{");
 
-                if (item is FieldDeclarationSyntax)
-                {
-                    AnalyzerField((FieldDeclarationSyntax) item);
-                }
-                else if (item is MethodDeclarationSyntax)
-                {
-                    AnalyzerMethod((MethodDeclarationSyntax) item);
-                }
-                else if (item is EnumDeclarationSyntax)
-                {
-                    AnalyzerEnum((EnumDeclarationSyntax) item);
+                    for (int i = 0; i < classDeclarationSyntax.Members.Count; i++)
+                    {
+                        var item = classDeclarationSyntax.Members[i];
+
+                        if (item is FieldDeclarationSyntax)
+                        {
+                            AnalyzerField((FieldDeclarationSyntax) item);
+                        }
+                        else if (item is MethodDeclarationSyntax)
+                        {
+                            AnalyzerMethod((MethodDeclarationSyntax) item);
+                        }
+                        else if (item is EnumDeclarationSyntax)
+                        {
+                            AnalyzerEnum((EnumDeclarationSyntax) item);
+                        }
+                    }
+
+                    structInfo.AppendLine("}");
+                    main.AppendLine(structInfo.ToString());
+                    Console.WriteLine(main);
+
+                    var path = Environment.CurrentDirectory + $"\\{classDeclarationSyntax.Identifier.ToString()}.go";
+                    SaveGoFile(main.ToString(), path);
                 }
             }
-
-            structInfo.AppendLine("}");
-            main.AppendLine(structInfo.ToString());
-            Console.WriteLine(main);
-
-            var path = Environment.CurrentDirectory + $"\\{classDeclarationSyntax.Identifier.ToString()}.go";
-            SaveGoFile(main.ToString(), path);
         }
-
         private void SaveGoFile(string str, string path)
         {
             var bytes = Encoding.UTF8.GetBytes(str);
@@ -547,7 +561,7 @@ namespace cs2go.tools
             if (expressionSyntax is LiteralExpressionSyntax)
             {
                 var str = expressionSyntax.ToString();
-                if (str == "false") 
+                if (str == FALSE) 
                     return str;
                 return expressionSyntax.ToString().Replace("f", "");//屏蔽掉因为浮点数的字符串
             }
