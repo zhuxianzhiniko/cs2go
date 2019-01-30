@@ -39,6 +39,7 @@
 * go的struct无法声明初始化值，只能自定义一个函数
 * CSharp中静态函数和静态变量/静态常量 都在go里都当作全局函数/全局变量/全局常量
 * go没有Enum类型，使用iota模拟CSharp Enum; [参考实现](https://studygolang.com/articles/5386)
+* go模拟的enum不能为私有或者类enum;
 * CSharp array/List 对于go来讲都是切片(Slice)
 * 由于go的切片(Slice)只有对索引的操作，在CSharp这边也统一使用只对索引进行操作的API。list.RemoveAt(0);
 
