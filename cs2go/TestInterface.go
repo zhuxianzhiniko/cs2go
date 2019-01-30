@@ -17,5 +17,5 @@ type TestClass1 struct {
 	num int
 }
 type TestClass2 struct {
-	num int
+	num intg
 }

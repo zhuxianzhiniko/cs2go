@@ -546,7 +546,7 @@ namespace cs2go.tools
                 return memberAccessExpressionSyntax.Name.ToString();
             }
             
-            return memberAccessExpressionSyntax.ToString();
+            return String.Empty;
         }
 
         /// <summary>
@@ -604,7 +604,12 @@ namespace cs2go.tools
             
             if (expressionSyntax is MemberAccessExpressionSyntax)
             {
-                return GetMemberAccessExpression((MemberAccessExpressionSyntax) expressionSyntax);
+                var exp = GetMemberAccessExpression((MemberAccessExpressionSyntax) expressionSyntax);
+                if (string.IsNullOrEmpty(exp))
+                {
+                    return expressionSyntax.ToString();
+                }
+                return exp;
             }
 
             if (expressionSyntax is IdentifierNameSyntax)
@@ -648,12 +653,15 @@ namespace cs2go.tools
 
                 if (syntaxNode.Expression is MemberAccessExpressionSyntax)
                 {
-                    return GetMemberAccessExpression(syntaxNode.Expression as MemberAccessExpressionSyntax);
+                    var expStr = GetMemberAccessExpression(syntaxNode.Expression as MemberAccessExpressionSyntax);
+                    
+                    if (string.IsNullOrEmpty(expStr))
+                    {
+                        return syntaxNode.ToString();
+                    }
+                    return expStr;
                 }
-                else
-                {
-                    return syntaxNode.ToString();
-                }
+                return syntaxNode.ToString();
             }
 
             if (expressionSyntax is ObjectCreationExpressionSyntax)

@@ -46,10 +46,10 @@ func (th *TestClass) GetHurt(list []string, testClass TestClass, callNum int) in
 	ShowTest(100)
 	var attack = th.GetMaxAttack(100)
 	th.GetMaxAttack(100)
-	testClass.Show
+	testClass.Show()
 	var test = new(TestClass)
 	var test1 = Init()
-	test1.Show
+	test1.Show()
 	var num1 = 100 + 2 - 10*100/2
 	for i := 10; i < cap(testClass.lists); i++ {
 		i++
@@ -67,7 +67,7 @@ func (th *TestClass) GetHurt(list []string, testClass TestClass, callNum int) in
 
 	}
 
-	switch testClass.GetMaxAttack {
+	switch testClass.GetMaxAttack(100) {
 	case 1:
 		for i := 10; i < 100; i++ {
 			i++
