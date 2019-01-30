@@ -13,14 +13,12 @@ namespace cs2go
 {
     internal class Program
     {
-        private static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
-
-            Start();
-            Console.ReadLine();
+            await Start();
         }
 
-        private static async void Start()
+        private static async Task Start()
         {
             List<string> list = new List<string>(2)
                 {@"E:\cs2go\cs2go\TestClass.cs", @"E:\cs2go\cs2go\TestInterface.cs"};
