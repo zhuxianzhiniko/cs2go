@@ -33,6 +33,9 @@ namespace cs2go.tools
         public const string VAR = "var";
         public const string BracesS ="{";
         public const string BracesE ="}";
+        public const string TYPE = "type";
+        public const string STRUCT = "struct";
+        public const string FUNC = "func";
 
         
         public const string  FALSE = "false";
@@ -93,11 +96,16 @@ namespace cs2go.tools
       
 
 
-        public void AnalyzerStart(string code)
+        public void AnalyzerStart(string code,string fileName)
         {
             var roslynTree = CSharpSyntaxTree.ParseText(code);
             var syntax = (CompilationUnitSyntax) roslynTree.GetRoot();
+            main.AppendLine(DefaultPackageName); 
             AnalyzerMemberDeclaration(syntax.Members);
+            main.AppendLine(structInfo.ToString());
+            Console.WriteLine(main);
+            var path = Environment.CurrentDirectory + $"\\{fileName}.go";
+            SaveGoFile(main.ToString(), path);
         }
         
         private void AnalyzerMemberDeclaration(SyntaxList<MemberDeclarationSyntax> memberDeclarationSyntaxs)
@@ -115,8 +123,7 @@ namespace cs2go.tools
                 if (member is ClassDeclarationSyntax)
                 {
                     classDeclarationSyntax = (ClassDeclarationSyntax) member;
-                    main.AppendLine(DefaultPackageName);
-                    structInfo.AppendLine($"type {classDeclarationSyntax.Identifier.ToString()} struct " + "{");
+                    structInfo.AppendLine($"{TYPE} {classDeclarationSyntax.Identifier.ToString()} {STRUCT} {BracesS}" );
 
                     for (int i = 0; i < classDeclarationSyntax.Members.Count; i++)
                     {
@@ -135,22 +142,15 @@ namespace cs2go.tools
                             AnalyzerEnum((EnumDeclarationSyntax) item);
                         }
                     }
-
-                    structInfo.AppendLine("}");
-                    main.AppendLine(structInfo.ToString());
-                    Console.WriteLine(main);
-
-                    var path = Environment.CurrentDirectory + $"\\{classDeclarationSyntax.Identifier.ToString()}.go";
-                    SaveGoFile(main.ToString(), path);
+                    structInfo.AppendLine(BracesE);
+                 
                 }
             }
         }
 
         private void AnalyzerInterfaceDeclaration(InterfaceDeclarationSyntax interfaceDeclarationSyntax)
         {
-            main.AppendLine(DefaultPackageName); 
-            main.AppendLine($"type {interfaceDeclarationSyntax.Identifier.ToString()} {interfaceDeclarationSyntax.Keyword} {BracesS}");
-
+            main.AppendLine($"{TYPE} {interfaceDeclarationSyntax.Identifier.ToString()} {interfaceDeclarationSyntax.Keyword} {BracesS}");
             foreach (var member in interfaceDeclarationSyntax.Members)
             {
                 if (member is MethodDeclarationSyntax)
@@ -165,11 +165,7 @@ namespace cs2go.tools
                         $"{methodDeclarationSyntax.Identifier.Text} ({AnalyzerParameterList(methodDeclarationSyntax.ParameterList)}) {returnType}");
                 }
             }
-            structInfo.AppendLine("}");
-            main.AppendLine(structInfo.ToString());
-            Console.WriteLine(main);
-            var path = Environment.CurrentDirectory + $"\\{interfaceDeclarationSyntax.Identifier.ToString()}.go";
-            SaveGoFile(main.ToString(), path);
+            main.AppendLine(BracesE);
         }
         private void SaveGoFile(string str, string path)
         {
@@ -269,9 +265,9 @@ namespace cs2go.tools
         /// <param name="enumDeclarationSyntax"></param>
         private void AnalyzerEnum(EnumDeclarationSyntax enumDeclarationSyntax)
         {
-            main.AppendLine($"type {enumDeclarationSyntax.Identifier.Text} int");
+            main.AppendLine($"{TYPE} {enumDeclarationSyntax.Identifier.Text} {INT}");
 
-            main.AppendLine($"const (");
+            main.AppendLine($"{CONST} (");
 
             for (int i = 0; i < enumDeclarationSyntax.Members.Count; i++)
             {
@@ -314,18 +310,16 @@ namespace cs2go.tools
             if (flg)
             {
                 main.AppendLine(
-                    $"func {methodDeclarationSyntax.Identifier.Text} ({AnalyzerParameterList(methodDeclarationSyntax.ParameterList)}) {returnType}" +
-                    "{");
+                    $"{FUNC} {methodDeclarationSyntax.Identifier.Text} ({AnalyzerParameterList(methodDeclarationSyntax.ParameterList)}) {returnType} {BracesS}");
             }
             else
             {
                 main.AppendLine(
-                    $"func ({TH} *{classDeclarationSyntax.Identifier.Text}) {methodDeclarationSyntax.Identifier.Text} ({AnalyzerParameterList(methodDeclarationSyntax.ParameterList)}) {returnType}" +
-                    "{");
+                    $"{FUNC} ({TH} *{classDeclarationSyntax.Identifier.Text}) {methodDeclarationSyntax.Identifier.Text} ({AnalyzerParameterList(methodDeclarationSyntax.ParameterList)}) {returnType} {BracesS}");
             }
 
             main.AppendLine(GetStatements(methodDeclarationSyntax.Body.Statements));
-            main.AppendLine("}");
+            main.AppendLine(BracesE);
         }
 
 
@@ -337,14 +331,13 @@ namespace cs2go.tools
         {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.AppendLine(
-                $"{forStatementSyntax.ForKeyword} {GetIdentifier(forStatementSyntax.Declaration)} :{GetInitializer(forStatementSyntax.Declaration)}; {AnalyzerExpression(forStatementSyntax.Condition)}; {forStatementSyntax.Incrementors}" +
-                "{");
+                $"{forStatementSyntax.ForKeyword} {GetIdentifier(forStatementSyntax.Declaration)} :{GetInitializer(forStatementSyntax.Declaration)}; {AnalyzerExpression(forStatementSyntax.Condition)}; {forStatementSyntax.Incrementors} {BracesS}");
 
             BlockSyntax blockSyntax = (BlockSyntax) forStatementSyntax.Statement;
             var sd = GetStatements(blockSyntax.Statements);
             stringBuilder.AppendLine(sd);
 
-            stringBuilder.AppendLine("}");
+            stringBuilder.AppendLine(BracesE);
             return stringBuilder.ToString();
         }
 
@@ -357,7 +350,7 @@ namespace cs2go.tools
         {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.AppendLine(
-                $"{switchStatementSyntax.SwitchKeyword} {AnalyzerExpression(switchStatementSyntax.Expression)}" + "{");
+                $"{switchStatementSyntax.SwitchKeyword} {AnalyzerExpression(switchStatementSyntax.Expression)} {BracesS}");
 
             foreach (var sectionSyntax in switchStatementSyntax.Sections)
             {
@@ -366,7 +359,7 @@ namespace cs2go.tools
                 stringBuilder.AppendLine(GetStatements(sectionSyntax.Statements));
             }
 
-            stringBuilder.AppendLine("}");
+            stringBuilder.AppendLine(BracesE);
 
             return stringBuilder.ToString();
         }
@@ -437,9 +430,9 @@ namespace cs2go.tools
         {
            StringBuilder stringBuilder = new StringBuilder();
 
-           stringBuilder.AppendLine($"{ifStatementSyntax.IfKeyword} {AnalyzerExpression(ifStatementSyntax.Condition)} "+"{");
+           stringBuilder.AppendLine($"{ifStatementSyntax.IfKeyword} {AnalyzerExpression(ifStatementSyntax.Condition)} {BracesS}");
            stringBuilder.AppendLine(GetStatement(ifStatementSyntax.Statement));
-           stringBuilder.AppendLine("}"+(AnalyzerelseClause(ifStatementSyntax.Else)));
+           stringBuilder.AppendLine(BracesE+(AnalyzerelseClause(ifStatementSyntax.Else)));
            return stringBuilder.ToString();
         }
         /// <summary>
@@ -452,14 +445,14 @@ namespace cs2go.tools
             StringBuilder stringBuilder = new StringBuilder();
             if (elseClauseSyntax.Statement is BlockSyntax) //因为{问题，在没有下一个else if 的特殊处理
             {
-                stringBuilder.AppendLine($"{elseClauseSyntax.ElseKeyword}"+"{");
+                stringBuilder.AppendLine($"{elseClauseSyntax.ElseKeyword} {BracesS}");
                 stringBuilder.AppendLine(GetStatement(elseClauseSyntax.Statement));
             }
             else
             {
                 stringBuilder.Append($"{elseClauseSyntax.ElseKeyword}  "); 
                 stringBuilder.AppendLine(GetStatement(elseClauseSyntax.Statement));
-                stringBuilder.AppendLine("}");
+                stringBuilder.AppendLine(BracesE);
             }
             return stringBuilder.ToString();
         }

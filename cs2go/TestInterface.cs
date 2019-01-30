@@ -9,4 +9,22 @@ namespace cs2go
         int GetMaxAttack(string name,int key);
         
     }
+
+    public class TestClass1
+    {
+        public int num;
+        void Show()
+        {
+            
+        }
+    }
+    public class TestClass2
+    {
+        public int num;
+
+        void Show()
+        {
+            
+        }
+    }
 }

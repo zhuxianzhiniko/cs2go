@@ -8,9 +8,9 @@ namespace cs2go
     {
         private static void Main(string[] args)
         {
-            var fileInput = File.ReadAllText(@"E:\cs2go\cs2go\TestInterface.cs");
+            var fileInput = File.ReadAllText(@"E:\cs2go\cs2go\TestClass.cs");
             AnalyzerToGolang analyzerToGolang = new AnalyzerToGolang();
-            analyzerToGolang.AnalyzerStart(fileInput);
+            analyzerToGolang.AnalyzerStart(fileInput,"TestClass");
             Console.ReadLine();
         }
     }
