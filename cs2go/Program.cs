@@ -15,6 +15,7 @@ namespace cs2go
     {
         private static async Task Main(string[] args)
         {
+            
             await Start();
         }
 

@@ -636,7 +636,6 @@ namespace cs2go.tools
 
                 if (syntaxNode.Expression is IdentifierNameSyntax)
                 {
-                    var identifier =((IdentifierNameSyntax) syntaxNode.Expression).Identifier;
                     bool isAddPointer = GetMethodPointer(syntaxNode.Expression.ToString());
                     if (isAddPointer)
                     {
