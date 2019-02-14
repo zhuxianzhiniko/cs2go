@@ -29,6 +29,11 @@ namespace cs2go
         /// go 文件的储存路径
         /// </summary>
         public string GoFilePath;
+
+        /// <summary>
+        /// 用于替换的固定代码语句
+        /// </summary>
+        public Dictionary<string,string> ReplaceCodeDic;
     }
 
     internal class Program
@@ -56,6 +61,7 @@ namespace cs2go
                 _config.DefaultPackageName = "main";
                 _config.CSharpPath = Environment.CurrentDirectory;
                 _config.GoFilePath = Environment.CurrentDirectory;
+                _config.ReplaceCodeDic = new Dictionary<string, string>();
                 SaveConfig();
             }
         }
@@ -121,6 +127,11 @@ namespace cs2go
             if (File.Exists(filePath))
             {
                 var fileInput = File.ReadAllText(filePath);
+
+                foreach (var item in _config.ReplaceCodeDic)
+                {
+                    fileInput = fileInput.Replace(item.Key, item.Value);
+                }
 
                 var roslynTree = CSharpSyntaxTree.ParseText(fileInput);
                 var syntax = (CompilationUnitSyntax) roslynTree.GetRoot();

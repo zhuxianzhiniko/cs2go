@@ -377,6 +377,7 @@ namespace cs2go.tools
             return stringBuilder.ToString();
         }
 
+
         /// <summary>
         /// 单一个Statement
         /// </summary>
