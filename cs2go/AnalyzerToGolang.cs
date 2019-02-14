@@ -95,7 +95,12 @@ namespace cs2go.tools
         };
 
 
-      
+        /// <summary>
+        /// 入口
+        /// </summary>
+        /// <param name="syntax"></param>
+        /// <param name="classNameList">已解析的类名列表</param>
+        /// <returns></returns>
         public string AnalyzerStart(CompilationUnitSyntax  syntax,List<string> classNameList)
         {
             _classNameList = classNameList;
@@ -106,6 +111,10 @@ namespace cs2go.tools
             return main.ToString();
         }
   
+        /// <summary>
+        ///  结构解析入口
+        /// </summary>
+        /// <param name="memberDeclarationSyntaxs"></param>
         private void AnalyzerMemberDeclaration(SyntaxList<MemberDeclarationSyntax> memberDeclarationSyntaxs)
         {
             foreach (var member in memberDeclarationSyntaxs)
@@ -146,6 +155,10 @@ namespace cs2go.tools
             }
         }
 
+        /// <summary>
+        /// 接口解析入口
+        /// </summary>
+        /// <param name="interfaceDeclarationSyntax"></param>
         private void AnalyzerInterfaceDeclaration(InterfaceDeclarationSyntax interfaceDeclarationSyntax)
         {
             main.AppendLine($"{TYPE} {interfaceDeclarationSyntax.Identifier.ToString()} {interfaceDeclarationSyntax.Keyword} {BracesS}");
@@ -211,6 +224,11 @@ namespace cs2go.tools
             return false;
         }
         
+        /// <summary>
+        /// 获得Field 是否是静态的
+        /// </summary>
+        /// <param name="fieldName"></param>
+        /// <returns></returns>
         private bool GetFieldStatic(string fieldName)
         {
             for (int i = 0; i < classDeclarationSyntax.Members.Count; i++)
@@ -554,6 +572,11 @@ namespace cs2go.tools
             return elementAccessExpressionSyntax.ToString();
         }
 
+        /// <summary>
+        /// 参数 解析 for AssignmentExpressionSyntax
+        /// </summary>
+        /// <param name="assignmentExpression"></param>
+        /// <returns></returns>
         private string  AnalyzerAssignmentExpression(AssignmentExpressionSyntax assignmentExpression)
         {
             string str = String.Empty;
@@ -563,6 +586,11 @@ namespace cs2go.tools
             return str;
         }
         
+        /// <summary>
+        /// 参数 解析 for BinaryExpressionSyntax
+        /// </summary> 
+        /// <param name="binaryExpression"></param>
+        /// <returns></returns>
         private string  AnalyzerBinaryExpression(BinaryExpressionSyntax binaryExpression)
         {
             string str = String.Empty;
