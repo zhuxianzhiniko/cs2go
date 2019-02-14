@@ -13,8 +13,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace cs2go.tools
 {
-
-    
     public class AnalyzerToGolang
     {
         private ClassDeclarationSyntax classDeclarationSyntax;
@@ -31,15 +29,15 @@ namespace cs2go.tools
         public const string LENGHT = "Length";
         public const string TH = "th";
         public const string VAR = "var";
-        public const string BracesS ="{";
-        public const string BracesE ="}";
+        public const string BracesS = "{";
+        public const string BracesE = "}";
         public const string TYPE = "type";
         public const string STRUCT = "struct";
         public const string FUNC = "func";
         public const string PACKAGE = "package";
 
-        
-        public const string  FALSE = "false";
+
+        public const string FALSE = "false";
 
         public const string DICTIONARY = "Dictionary";
         public const string LIST = "List";
@@ -49,49 +47,49 @@ namespace cs2go.tools
         public const string REMOVEAT = "RemoveAt";
         public const string ADD = "Add";
         public const string CLEAR = "Clear";
-        
-        
+
+
         //类型
-        
+
         public const string INT = "int";
         public const string UINT = "uint";
-        
+
         public const string USHORT = "ushort";
         public const string SHORT = "short";
-        
+
         public const string ULONG = "ulong";
         public const string LONG = "long";
-        
+
         public const string FLOAT = "float";
         public const string DOUBLE = "double";
-        
+
         public const string STRING = "string";
 
         public const string BOOL = "bool";
 
 
         private List<string> _classNameList;
-    
+
         /// <summary>
         /// 基元类型字典  key为CSharp类型，value对应go的类型
         /// </summary>
-        public static Dictionary<string,string> PrimitiveTypes = new Dictionary<string, string>()
+        public static Dictionary<string, string> PrimitiveTypes = new Dictionary<string, string>()
         {
-            {INT,INT},
-            {UINT,"uint32"},
+            {INT, INT},
+            {UINT, "uint32"},
 
-            
-            {USHORT,"uint16"},
-            {SHORT,"int16"},
-            
-            {ULONG,"uint64"},
-            {LONG,"int64"},
-            
-            {FLOAT,"float32"},
-            {DOUBLE,"float64"},
-            
-            {STRING,STRING},
-            {BOOL,BOOL},
+
+            {USHORT, "uint16"},
+            {SHORT, "int16"},
+
+            {ULONG, "uint64"},
+            {LONG, "int64"},
+
+            {FLOAT, "float32"},
+            {DOUBLE, "float64"},
+
+            {STRING, STRING},
+            {BOOL, BOOL},
         };
 
 
@@ -101,16 +99,16 @@ namespace cs2go.tools
         /// <param name="syntax"></param>
         /// <param name="classNameList">已解析的类名列表</param>
         /// <returns></returns>
-        public string AnalyzerStart(CompilationUnitSyntax  syntax,List<string> classNameList)
+        public string AnalyzerStart(CompilationUnitSyntax syntax, List<string> classNameList)
         {
             _classNameList = classNameList;
-            main.AppendLine($"{PACKAGE} {Program._config.DefaultPackageName}"); 
+            main.AppendLine($"{PACKAGE} {Program._config.DefaultPackageName}");
             AnalyzerMemberDeclaration(syntax.Members);
             main.AppendLine(structInfo.ToString());
             Console.WriteLine(main);
             return main.ToString();
         }
-  
+
         /// <summary>
         ///  结构解析入口
         /// </summary>
@@ -123,14 +121,16 @@ namespace cs2go.tools
                 {
                     AnalyzerMemberDeclaration(((NamespaceDeclarationSyntax) member).Members);
                 }
+
                 if (member is InterfaceDeclarationSyntax)
                 {
                     AnalyzerInterfaceDeclaration((InterfaceDeclarationSyntax) member);
                 }
+
                 if (member is ClassDeclarationSyntax)
                 {
                     classDeclarationSyntax = (ClassDeclarationSyntax) member;
-                    structInfo.AppendLine($"{TYPE} {classDeclarationSyntax.Identifier.ToString()} {STRUCT} {BracesS}" );
+                    structInfo.AppendLine($"{TYPE} {classDeclarationSyntax.Identifier.ToString()} {STRUCT} {BracesS}");
 
                     for (int i = 0; i < classDeclarationSyntax.Members.Count; i++)
                     {
@@ -149,8 +149,8 @@ namespace cs2go.tools
                             AnalyzerEnum((EnumDeclarationSyntax) item);
                         }
                     }
+
                     structInfo.AppendLine(BracesE);
-                 
                 }
             }
         }
@@ -161,7 +161,8 @@ namespace cs2go.tools
         /// <param name="interfaceDeclarationSyntax"></param>
         private void AnalyzerInterfaceDeclaration(InterfaceDeclarationSyntax interfaceDeclarationSyntax)
         {
-            main.AppendLine($"{TYPE} {interfaceDeclarationSyntax.Identifier.ToString()} {interfaceDeclarationSyntax.Keyword} {BracesS}");
+            main.AppendLine(
+                $"{TYPE} {interfaceDeclarationSyntax.Identifier.ToString()} {interfaceDeclarationSyntax.Keyword} {BracesS}");
             foreach (var member in interfaceDeclarationSyntax.Members)
             {
                 if (member is MethodDeclarationSyntax)
@@ -172,10 +173,12 @@ namespace cs2go.tools
                     {
                         returnType = String.Empty;
                     }
+
                     main.AppendLine(
                         $"{methodDeclarationSyntax.Identifier.Text} ({AnalyzerParameterList(methodDeclarationSyntax.ParameterList)}) {returnType}");
                 }
             }
+
             main.AppendLine(BracesE);
         }
 
@@ -202,11 +205,11 @@ namespace cs2go.tools
         }
 
         /// <summary>
-        /// 通过函数名获得是否需要加调用指针 th,如果没找到则不需要添加(默认静态函数)
+        /// 通过调用名 获得是否需要加调用指针 th,如果没找到则不需要添加(默认静态函数)
         /// </summary>
-        /// <param name="methodName"></param>
+        /// <param name="callName"></param>
         /// <returns></returns>
-        private bool GetMethodPointer(string methodName)
+        private bool GetMethodPointer(string callName)
         {
             for (int i = 0; i < classDeclarationSyntax.Members.Count; i++)
             {
@@ -214,37 +217,26 @@ namespace cs2go.tools
 
                 if (item is MethodDeclarationSyntax)
                 {
-                    if (((MethodDeclarationSyntax) item).Identifier.Text == methodName)
+                    if (((MethodDeclarationSyntax) item).Identifier.Text == callName)
                     {
                         //如果是静态函数/常量，不需要加th调用
                         return !GetStaticOrConst(((MethodDeclarationSyntax) item).Modifiers);
                     }
                 }
-            }
-            return false;
-        }
-        
-        /// <summary>
-        /// 获得Field 是否是静态的
-        /// </summary>
-        /// <param name="fieldName"></param>
-        /// <returns></returns>
-        private bool GetFieldStatic(string fieldName)
-        {
-            for (int i = 0; i < classDeclarationSyntax.Members.Count; i++)
-            {
-                var item = classDeclarationSyntax.Members[i];
 
                 if (item is FieldDeclarationSyntax)
                 {
-                    if (GetIdentifier((item as FieldDeclarationSyntax).Declaration) == fieldName)
+                    if (((FieldDeclarationSyntax) item).Declaration.Variables.ToString() == callName)
                     {
-                        return GetStaticOrConst(((FieldDeclarationSyntax) item).Modifiers);
+                        //如果是静态函数/常量，不需要加th调用
+                        return !GetStaticOrConst(((FieldDeclarationSyntax) item).Modifiers);
                     }
                 }
             }
-            return true;
+
+            return false;
         }
+
 
         /// <summary>
         /// 获得是否是包含静态或者常量修饰符
@@ -260,6 +252,7 @@ namespace cs2go.tools
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -301,16 +294,16 @@ namespace cs2go.tools
             var returnType = methodDeclarationSyntax.ReturnType.ToString();
             if (returnType == VOID)
             {
-                  returnType = String.Empty;
+                returnType = String.Empty;
             }
             else
             {
-                if (!PrimitiveTypes.TryGetValue(returnType,out _))
+                if (!PrimitiveTypes.TryGetValue(returnType, out _))
                 {
                     returnType = "*" + CharpTypeToGolangType(methodDeclarationSyntax.ReturnType);
                 }
             }
-            
+
             if (flg)
             {
                 main.AppendLine(
@@ -380,6 +373,7 @@ namespace cs2go.tools
             {
                 stringBuilder.AppendLine(GetStatement(item));
             }
+
             return stringBuilder.ToString();
         }
 
@@ -422,13 +416,14 @@ namespace cs2go.tools
 
             if (item is IfStatementSyntax)
             {
-                return AnalyzerIfStatement((IfStatementSyntax)item);
+                return AnalyzerIfStatement((IfStatementSyntax) item);
             }
 
             if (item is BlockSyntax)
             {
-                return GetStatements(((BlockSyntax)item).Statements);
+                return GetStatements(((BlockSyntax) item).Statements);
             }
+
             return String.Empty;
         }
 
@@ -439,13 +434,15 @@ namespace cs2go.tools
         /// <returns></returns>
         private string AnalyzerIfStatement(IfStatementSyntax ifStatementSyntax)
         {
-           StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder stringBuilder = new StringBuilder();
 
-           stringBuilder.AppendLine($"{ifStatementSyntax.IfKeyword} {AnalyzerExpression(ifStatementSyntax.Condition)} {BracesS}");
-           stringBuilder.AppendLine(GetStatement(ifStatementSyntax.Statement));
-           stringBuilder.AppendLine(BracesE+(AnalyzerelseClause(ifStatementSyntax.Else)));
-           return stringBuilder.ToString();
+            stringBuilder.AppendLine(
+                $"{ifStatementSyntax.IfKeyword} {AnalyzerExpression(ifStatementSyntax.Condition)} {BracesS}");
+            stringBuilder.AppendLine(GetStatement(ifStatementSyntax.Statement));
+            stringBuilder.AppendLine(BracesE + (AnalyzerelseClause(ifStatementSyntax.Else)));
+            return stringBuilder.ToString();
         }
+
         /// <summary>
         /// else 解析
         /// </summary>
@@ -461,10 +458,11 @@ namespace cs2go.tools
             }
             else
             {
-                stringBuilder.Append($"{elseClauseSyntax.ElseKeyword}  "); 
+                stringBuilder.Append($"{elseClauseSyntax.ElseKeyword}  ");
                 stringBuilder.AppendLine(GetStatement(elseClauseSyntax.Statement));
                 stringBuilder.AppendLine(BracesE);
             }
+
             return stringBuilder.ToString();
         }
 
@@ -533,30 +531,34 @@ namespace cs2go.tools
             {
                 return "cap(" + memberAccessExpressionSyntax.Expression + ")";
             }
-            
+
             if (memberAccessExpressionSyntax.Name.ToString() == REMOVEAT)
             {
-                var str = (memberAccessExpressionSyntax.Parent as InvocationExpressionSyntax)?.ArgumentList.ToString().Replace("(", "").Replace(")", "");
-                return $"{memberAccessExpressionSyntax.Expression} = append({memberAccessExpressionSyntax.Expression}[:{str}], {memberAccessExpressionSyntax.Expression}[{str}+1:]...)";
+                var str = (memberAccessExpressionSyntax.Parent as InvocationExpressionSyntax)?.ArgumentList.ToString()
+                    .Replace("(", "").Replace(")", "");
+                return
+                    $"{memberAccessExpressionSyntax.Expression} = append({memberAccessExpressionSyntax.Expression}[:{str}], {memberAccessExpressionSyntax.Expression}[{str}+1:]...)";
             }
 
             if (memberAccessExpressionSyntax.Name.ToString() == ADD)
             {
-                var str = (memberAccessExpressionSyntax.Parent as InvocationExpressionSyntax)?.ArgumentList.ToString().Replace("(", "").Replace(")", "");
-                return $"{memberAccessExpressionSyntax.Expression} = append({memberAccessExpressionSyntax.Expression}, {str})";
+                var str = (memberAccessExpressionSyntax.Parent as InvocationExpressionSyntax)?.ArgumentList.ToString()
+                    .Replace("(", "").Replace(")", "");
+                return
+                    $"{memberAccessExpressionSyntax.Expression} = append({memberAccessExpressionSyntax.Expression}, {str})";
             }
 
             if (memberAccessExpressionSyntax.Name.ToString() == CLEAR)
             {
                 return $"{memberAccessExpressionSyntax.Expression} = {memberAccessExpressionSyntax.Expression}[:0:0]";
             }
-            
+
             //修饰enum
             if (IsEnum(memberAccessExpressionSyntax.Expression.ToString()))
             {
                 return memberAccessExpressionSyntax.Name.ToString();
             }
-            
+
             return String.Empty;
         }
 
@@ -567,8 +569,10 @@ namespace cs2go.tools
         {
             if (elementAccessExpressionSyntax.Expression is IdentifierNameSyntax)
             {
-                return $"{AnalyzerExpression(elementAccessExpressionSyntax.Expression)}{elementAccessExpressionSyntax.ArgumentList.ToString()}";
+                return
+                    $"{AnalyzerExpression(elementAccessExpressionSyntax.Expression)}{elementAccessExpressionSyntax.ArgumentList.ToString()}";
             }
+
             return elementAccessExpressionSyntax.ToString();
         }
 
@@ -577,7 +581,7 @@ namespace cs2go.tools
         /// </summary>
         /// <param name="assignmentExpression"></param>
         /// <returns></returns>
-        private string  AnalyzerAssignmentExpression(AssignmentExpressionSyntax assignmentExpression)
+        private string AnalyzerAssignmentExpression(AssignmentExpressionSyntax assignmentExpression)
         {
             string str = String.Empty;
             str += AnalyzerExpression(assignmentExpression.Left);
@@ -585,19 +589,24 @@ namespace cs2go.tools
             str += AnalyzerExpression(assignmentExpression.Right);
             return str;
         }
-        
+
         /// <summary>
         /// 参数 解析 for BinaryExpressionSyntax
         /// </summary> 
         /// <param name="binaryExpression"></param>
         /// <returns></returns>
-        private string  AnalyzerBinaryExpression(BinaryExpressionSyntax binaryExpression)
+        private string AnalyzerBinaryExpression(BinaryExpressionSyntax binaryExpression)
         {
             string str = String.Empty;
             str += AnalyzerExpression(binaryExpression.Left);
             str += $" {binaryExpression.OperatorToken.Text} ";
             str += AnalyzerExpression(binaryExpression.Right);
             return str;
+        }
+
+        private string AS()
+        {
+            return String.Empty;
         }
 
         /// <summary>
@@ -610,19 +619,21 @@ namespace cs2go.tools
             if (expressionSyntax is LiteralExpressionSyntax)
             {
                 var str = expressionSyntax.ToString();
-                if (str == FALSE) 
+                if (str == FALSE)
                     return str;
-                return expressionSyntax.ToString().Replace("f", "");//屏蔽掉因为浮点数的字符串
+                return expressionSyntax.ToString().Replace("f", ""); //屏蔽掉因为浮点数的字符串
             }
+
             if (expressionSyntax is BinaryExpressionSyntax)
             {
-               return AnalyzerBinaryExpression(expressionSyntax as BinaryExpressionSyntax);
+                return AnalyzerBinaryExpression(expressionSyntax as BinaryExpressionSyntax);
             }
+
             if (expressionSyntax is AssignmentExpressionSyntax)
             {
                 return AnalyzerAssignmentExpression(expressionSyntax as AssignmentExpressionSyntax);
             }
-            
+
             if (expressionSyntax is MemberAccessExpressionSyntax)
             {
                 var exp = GetMemberAccessExpression((MemberAccessExpressionSyntax) expressionSyntax);
@@ -630,46 +641,44 @@ namespace cs2go.tools
                 {
                     return expressionSyntax.ToString();
                 }
+
                 return exp;
             }
 
             if (expressionSyntax is IdentifierNameSyntax)
             {
-                if (!GetFieldStatic(expressionSyntax.ToString()))
+                bool isAddPointer = GetMethodPointer(expressionSyntax.ToString());
+                if (isAddPointer)
                 {
-                    return TH + "." + expressionSyntax;
+                    return $"{TH}." + expressionSyntax;
                 }
-                return  expressionSyntax.ToString();
+
+                return expressionSyntax.ToString();
             }
 
             if (expressionSyntax is ElementAccessExpressionSyntax)
             {
                 return GetElementAccessExpression(expressionSyntax as ElementAccessExpressionSyntax);
             }
-            
+
             if (expressionSyntax is ArrayCreationExpressionSyntax)
             {
                 var ex = (ArrayCreationExpressionSyntax) expressionSyntax;
                 return CharpTypeToGolangType(ex.Type) + ex.Initializer;
             }
-            
+
             if (expressionSyntax is PostfixUnaryExpressionSyntax)
             {
                 return expressionSyntax.ToString();
             }
-            
+
             if (expressionSyntax is InvocationExpressionSyntax)
             {
                 InvocationExpressionSyntax syntaxNode = (InvocationExpressionSyntax) expressionSyntax;
 
                 if (syntaxNode.Expression is IdentifierNameSyntax)
                 {
-                    bool isAddPointer = GetMethodPointer(syntaxNode.Expression.ToString());
-                    if (isAddPointer)
-                    {
-                        return $"{TH}." + expressionSyntax;
-                    }
-                    return expressionSyntax.ToString();
+                    return AnalyzerExpression(syntaxNode.Expression);
                 }
 
                 if (syntaxNode.Expression is MemberAccessExpressionSyntax)
@@ -677,16 +686,26 @@ namespace cs2go.tools
                     var expStr = GetMemberAccessExpression(syntaxNode.Expression as MemberAccessExpressionSyntax);
                     if (string.IsNullOrEmpty(expStr))
                     {
-                        IdentifierNameSyntax identifier =(IdentifierNameSyntax)((MemberAccessExpressionSyntax)syntaxNode.Expression).Expression;
+                        IdentifierNameSyntax identifier =
+                            (IdentifierNameSyntax) ((MemberAccessExpressionSyntax) syntaxNode.Expression).Expression;
 
                         if (_classNameList.IndexOf(identifier.ToString()) != -1)
                         {
-                            return syntaxNode.ToString().Replace($"{identifier.ToString()}.","");
+                            return syntaxNode.ToString().Replace($"{identifier.ToString()}.", "");
                         }
+
+                        bool isAddPointer = GetMethodPointer(identifier.ToString());
+                        if (isAddPointer)
+                        {
+                            return $"{TH}." + syntaxNode;
+                        }
+
                         return syntaxNode.ToString();
                     }
+
                     return expStr;
                 }
+
                 return syntaxNode.ToString();
             }
 
@@ -782,10 +801,11 @@ namespace cs2go.tools
             if (typeSyntax is PredefinedTypeSyntax)
             {
                 string gotype;
-                if (PrimitiveTypes.TryGetValue(typeSyntax.ToString(),out gotype))
+                if (PrimitiveTypes.TryGetValue(typeSyntax.ToString(), out gotype))
                 {
                     return gotype;
                 }
+
                 return typeSyntax.ToString();
             }
 
@@ -819,7 +839,5 @@ namespace cs2go.tools
 
             return typeSyntax.ToString();
         }
-
-   
     }
 }
