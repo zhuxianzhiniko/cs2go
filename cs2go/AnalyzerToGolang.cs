@@ -36,6 +36,7 @@ namespace cs2go.tools
         public const string TYPE = "type";
         public const string STRUCT = "struct";
         public const string FUNC = "func";
+        public const string PACKAGE = "package";
 
         
         public const string  FALSE = "false";
@@ -68,14 +69,13 @@ namespace cs2go.tools
 
         public const string BOOL = "bool";
 
-        public string DefaultPackageName = "package main";
 
         private List<string> _classNameList;
     
         /// <summary>
         /// 基元类型字典  key为CSharp类型，value对应go的类型
         /// </summary>
-        public Dictionary<string,string> PrimitiveTypes = new Dictionary<string, string>()
+        public static Dictionary<string,string> PrimitiveTypes = new Dictionary<string, string>()
         {
             {INT,INT},
             {UINT,"uint32"},
@@ -104,7 +104,7 @@ namespace cs2go.tools
         public string AnalyzerStart(CompilationUnitSyntax  syntax,List<string> classNameList)
         {
             _classNameList = classNameList;
-            main.AppendLine(DefaultPackageName); 
+            main.AppendLine($"{PACKAGE} {Program._config.DefaultPackageName}"); 
             AnalyzerMemberDeclaration(syntax.Members);
             main.AppendLine(structInfo.ToString());
             Console.WriteLine(main);
