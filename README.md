@@ -44,6 +44,13 @@
 * 由于go的切片(Slice)只有对索引的操作，在CSharp这边也统一使用只对索引进行操作的API。list.RemoveAt(0);
 
 
+## 配置文件说明
+
+* [配置文件](https://github.com/zhuxianzhiniko/cs2go/blob/master/cs2go/Config.json) 在当前运行目录
+* DefaultPackageName go语言的包名
+* CSharpPath .cs文件目录路径
+* GoFilePath 转译的go文件目录路径
+* ReplaceCodeDic 用于替换的固定代码语句
 
 
 
