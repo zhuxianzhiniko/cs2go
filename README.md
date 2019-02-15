@@ -49,6 +49,7 @@
 * CSharpPath .cs文件目录路径
 * GoFilePath 转译的go文件目录路径
 * ReplaceCodeDic 用于替换的固定代码语句
+* IsConsoleCode  是否在控制台输出转换的代码
 
 ## 第三方的库/工具
 
