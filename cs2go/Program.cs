@@ -34,6 +34,11 @@ namespace cs2go
         /// 用于替换的固定代码语句
         /// </summary>
         public Dictionary<string,string> ReplaceCodeDic;
+
+        /// <summary>
+        /// 是否输出转换代码到控制台
+        /// </summary>
+        public bool IsConsoleCode;
     }
 
     internal class Program
@@ -62,6 +67,7 @@ namespace cs2go
                 _config.CSharpPath = Environment.CurrentDirectory;
                 _config.GoFilePath = Environment.CurrentDirectory;
                 _config.ReplaceCodeDic = new Dictionary<string, string>();
+                _config.IsConsoleCode = false;
                 SaveConfig();
             }
         }

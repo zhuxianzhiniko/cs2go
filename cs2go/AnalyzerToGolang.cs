@@ -107,6 +107,7 @@ namespace cs2go.tools
             main.AppendLine($"{PACKAGE} {Program._config.DefaultPackageName}");
             AnalyzerMemberDeclaration(syntax.Members);
             main.AppendLine(structInfo.ToString());
+            if(Program._config.IsConsoleCode)
             Console.WriteLine(main);
             return main.ToString();
         }
