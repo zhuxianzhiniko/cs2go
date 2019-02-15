@@ -1,8 +1,6 @@
-## CsharpToGo的工具
+## 运行说明
 
-* 使用[ roslyn ](https://github.com/dotnet/roslyn)对.cs文件进行代码分析,根据go语法特性生成go代码
-* 使用[ gofmt.exe ](https://golang.org/cmd/gofmt/)对生成go代码进行格式化
-
+* 运行或者编译的条件，先安装 [dotnet Core](https://dotnet.microsoft.com/download) , [配置](https://github.com/zhuxianzhiniko/cs2go/blob/master/cs2go/Config.json) 路径等信息后运行 [bat](https://github.com/zhuxianzhiniko/cs2go/blob/master/cs2go/run.bat)
 
 ## 语法支持
 
@@ -44,7 +42,7 @@
 * 由于go的切片(Slice)只有对索引的操作，在CSharp这边也统一使用只对索引进行操作的API。list.RemoveAt(0);
 
 
-## 配置文件说明
+## 配置文件
 
 * [配置文件](https://github.com/zhuxianzhiniko/cs2go/blob/master/cs2go/Config.json) 在当前运行目录
 * DefaultPackageName go语言的包名
@@ -52,6 +50,8 @@
 * GoFilePath 转译的go文件目录路径
 * ReplaceCodeDic 用于替换的固定代码语句
 
+## 第三方的库
 
-
+* 使用[ roslyn ](https://github.com/dotnet/roslyn)对.cs文件进行代码分析,根据go语法特性生成go代码
+* 使用[ gofmt.exe ](https://golang.org/cmd/gofmt/)对生成go代码进行格式化
 
