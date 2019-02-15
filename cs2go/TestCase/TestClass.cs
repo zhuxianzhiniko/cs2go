@@ -1,9 +1,12 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace cs2go
 {
     public class TestClass
     {
+  
+        
         //Enum测试
         public enum MyTestEnum
         {
@@ -37,6 +40,8 @@ namespace cs2go
             testClass.Flg = false;
             return testClass;
         }
+
+    
 
         //主要是函数过程测试
         public int GetHurt(List<string> list, TestClass testClass, int callNum)
@@ -97,6 +102,19 @@ namespace cs2go
             {
                 i++;
             }
+
+            //不支持foreach 直接忽略
+            foreach (var item in list)
+            {
+                
+            }
+
+            //不支持while 直接忽略
+            while (list.Count>0)
+            {
+                
+            }
+            
         
             //if表达式
             if (myTestEnum == MyTestEnum.One ||  testClass.dic[100]!="test" && myTestEnum == MyTestEnum.Tow)
@@ -168,6 +186,18 @@ namespace cs2go
 
             //返回值
             return 0;
+        }
+
+        // 不支持的异步函数
+        public async Task<int> TestFun()
+        {
+            return 100;
+        }
+        
+        // 不支持的泛型函数
+        public void TestT<T>(T t)
+        {
+            
         }
 
         //类函数测试 1

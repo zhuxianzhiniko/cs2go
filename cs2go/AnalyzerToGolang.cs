@@ -35,6 +35,7 @@ namespace cs2go.tools
         public const string STRUCT = "struct";
         public const string FUNC = "func";
         public const string PACKAGE = "package";
+        public const string ASYNC = "async";
 
 
         public const string FALSE = "false";
@@ -66,9 +67,6 @@ namespace cs2go.tools
         public const string STRING = "string";
 
         public const string BOOL = "bool";
-
-        public const string NULL = "null";
-
 
         private List<string> _classNameList;
 
@@ -260,6 +258,23 @@ namespace cs2go.tools
         }
 
         /// <summary>
+        /// 是否包含异步关键字
+        /// </summary>
+        /// <param name="syntaxTokenList"></param>
+        /// <returns></returns>
+        public bool GetMethodIsAsync(SyntaxTokenList syntaxTokenList)
+        {
+            foreach (var item in syntaxTokenList)
+            {
+                if (item.Text == ASYNC)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
         /// enum转译
         /// </summary>
         /// <param name="enumDeclarationSyntax"></param>
@@ -292,6 +307,12 @@ namespace cs2go.tools
         /// <param name="methodDeclarationSyntax"></param>
         private void AnalyzerMethod(MethodDeclarationSyntax methodDeclarationSyntax)
         {
+            if(GetMethodIsAsync(methodDeclarationSyntax.Modifiers))//不支持异步函数
+                return;
+            
+            if(methodDeclarationSyntax.TypeParameterList !=null) //不支持泛型函数
+                return;
+            
             var flg = GetStaticOrConst(methodDeclarationSyntax.Modifiers);
 
             var returnType = methodDeclarationSyntax.ReturnType.ToString();
