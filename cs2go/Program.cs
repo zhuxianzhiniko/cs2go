@@ -148,7 +148,7 @@ namespace cs2go
             info.WindowStyle = ProcessWindowStyle.Hidden;
             info.UseShellExecute = true;
             info.ErrorDialog = true;
-            info.Arguments = "-w " + Environment.CurrentDirectory;
+            info.Arguments = "-w " + _config.GoFilePath;
             Process.Start(info)?.WaitForExit();
         }
 
