@@ -50,7 +50,7 @@
 * GoFilePath 转译的go文件目录路径
 * ReplaceCodeDic 用于替换的固定代码语句
 
-## 第三方的库
+## 第三方的库/工具
 
 * 使用[ roslyn ](https://github.com/dotnet/roslyn)对.cs文件进行代码分析,根据go语法特性生成go代码
 * 使用[ gofmt.exe ](https://golang.org/cmd/gofmt/)对生成go代码进行格式化
