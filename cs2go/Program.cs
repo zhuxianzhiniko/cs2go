@@ -127,12 +127,6 @@ namespace cs2go
             if (File.Exists(filePath))
             {
                 var fileInput = File.ReadAllText(filePath);
-
-                foreach (var item in _config.ReplaceCodeDic)
-                {
-                    fileInput = fileInput.Replace(item.Key, item.Value);
-                }
-
                 var roslynTree = CSharpSyntaxTree.ParseText(fileInput);
                 var syntax = (CompilationUnitSyntax) roslynTree.GetRoot();
                 return syntax;

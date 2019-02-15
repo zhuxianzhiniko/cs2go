@@ -67,6 +67,8 @@ namespace cs2go.tools
 
         public const string BOOL = "bool";
 
+        public const string DEFAULT = "default";
+
 
         private List<string> _classNameList;
 
@@ -376,6 +378,13 @@ namespace cs2go.tools
 
             return stringBuilder.ToString();
         }
+        
+        private string GetReplaceCode(string code)
+        {
+            string str = DEFAULT;
+            Program._config.ReplaceCodeDic.TryGetValue(code, out str);
+            return str;
+        }
 
 
         /// <summary>
@@ -385,6 +394,11 @@ namespace cs2go.tools
         /// <returns></returns>
         private string GetStatement(StatementSyntax item)
         {
+            var replaceCode = GetReplaceCode(item.ToString());
+
+            if (replaceCode != DEFAULT)
+                return replaceCode;
+            
             if (item is ReturnStatementSyntax)
             {
                 return AnalyzerReturnStatement((ReturnStatementSyntax) item);
@@ -605,11 +619,6 @@ namespace cs2go.tools
             return str;
         }
 
-        private string AS()
-        {
-            return String.Empty;
-        }
-
         /// <summary>
         ///  表达式解析
         /// </summary>
@@ -751,6 +760,11 @@ namespace cs2go.tools
         /// <param name="fieldDeclarationSyntax"></param>
         private void AnalyzerField(FieldDeclarationSyntax fieldDeclarationSyntax)
         {
+            
+            var replaceCode = GetReplaceCode(fieldDeclarationSyntax.ToString());
+            if (replaceCode != DEFAULT)
+                return;
+            
             var flg = GetStaticOrConst(fieldDeclarationSyntax.Modifiers);
             if (flg)
             {
