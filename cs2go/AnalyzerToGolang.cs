@@ -67,7 +67,7 @@ namespace cs2go.tools
 
         public const string BOOL = "bool";
 
-        public const string DEFAULT = "default";
+        public const string NULL = "null";
 
 
         private List<string> _classNameList;
@@ -382,11 +382,14 @@ namespace cs2go.tools
         
         private string GetReplaceCode(string code)
         {
-            string str = DEFAULT;
+            string str = String.Empty;
             Program._config.ReplaceCodeDic.TryGetValue(code, out str);
             return str;
         }
-
+        private bool GetIsReplaceCode(string code)
+        {
+          return Program._config.ReplaceCodeDic.ContainsKey(code);
+        }
 
         /// <summary>
         /// 单一个Statement
@@ -395,10 +398,10 @@ namespace cs2go.tools
         /// <returns></returns>
         private string GetStatement(StatementSyntax item)
         {
-            var replaceCode = GetReplaceCode(item.ToString());
-
-            if (replaceCode != DEFAULT)
-                return replaceCode;
+            if (GetIsReplaceCode(item.ToString()))
+            {
+               return GetReplaceCode(item.ToString());
+            }
             
             if (item is ReturnStatementSyntax)
             {
@@ -689,7 +692,7 @@ namespace cs2go.tools
 
                 if (syntaxNode.Expression is IdentifierNameSyntax)
                 {
-                    return AnalyzerExpression(syntaxNode.Expression);
+                    return AnalyzerExpression(syntaxNode.Expression)+syntaxNode.ArgumentList;
                 }
 
                 if (syntaxNode.Expression is MemberAccessExpressionSyntax)
@@ -761,9 +764,7 @@ namespace cs2go.tools
         /// <param name="fieldDeclarationSyntax"></param>
         private void AnalyzerField(FieldDeclarationSyntax fieldDeclarationSyntax)
         {
-            
-            var replaceCode = GetReplaceCode(fieldDeclarationSyntax.ToString());
-            if (replaceCode != DEFAULT)
+            if (GetIsReplaceCode(fieldDeclarationSyntax.ToString()))
                 return;
             
             var flg = GetStaticOrConst(fieldDeclarationSyntax.Modifiers);
